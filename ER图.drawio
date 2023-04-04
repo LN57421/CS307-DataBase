@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2023-04-04T15:26:53.200Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="Y-wFQlDWw3MAz-EyKnzC" version="21.1.4" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2023-04-04T15:32:07.258Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" etag="MSgP3gKeWXaabCjRL070" version="21.1.4" type="github" pages="2">
   <diagram id="R2lEEEUBdFMjLlhIrx00" name="Page-1">
     <mxGraphModel dx="1436" dy="874" grid="1" gridSize="10" guides="1" tooltips="1" connect="0" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0" extFonts="Permanent Marker^https://fonts.googleapis.com/css?family=Permanent+Marker">
       <root>
@@ -624,7 +624,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="09CLgRJz-TpJbUC3OGpU-2" value="Followed_Authors" style="shape=table;startSize=20;container=1;collapsible=1;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=1;align=center;resizeLast=1;html=1;" vertex="1" parent="1">
-          <mxGeometry x="490" y="280" width="180" height="80" as="geometry" />
+          <mxGeometry x="500" y="250" width="180" height="80" as="geometry" />
         </mxCell>
         <mxCell id="09CLgRJz-TpJbUC3OGpU-3" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;top=0;left=0;right=0;bottom=1;" vertex="1" parent="09CLgRJz-TpJbUC3OGpU-2">
           <mxGeometry y="20" width="180" height="30" as="geometry" />
