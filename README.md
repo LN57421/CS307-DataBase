@@ -44,6 +44,45 @@ replies.json文件包括以下字段： Post ID、Reply Content、Reply Stars、
 
 使用任何图形软件制作数据库设计的E-R图。不接受手绘结果。请遵循E-R图的标准。 报告中需要提供E-R图的截图，并注明用于绘制图表的软件/在线服务名称。
 
+在根据本项目提供的数据文件（posts.json和replies.json）绘制ER（实体-关系）图时，可以遵循以下步骤：
+
+识别实体：
+首先，需要从数据文件中识别出不同的实体。在这个项目中，我们可以识别出以下实体：
+
+Post（文章）
+Author（作者）
+Reply（回复）
+Secondary Reply（二级回复）
+为实体定义属性：
+根据数据文件中的信息，为每个实体定义相应的属性。例如：
+
+Post：Post ID、Title、Category、Content、Posting Time、Posting City等。
+Author：Author ID、Author Registration Time、Author's Phone等。
+Reply：Post ID、Reply Content、Reply Stars、Reply Author等。
+Secondary Reply：Post ID、Secondary Reply Content、Secondary Reply Stars、Secondary Reply Author等。
+确定主键：
+为每个实体选择一个能唯一标识其实例的属性作为主键。在这个项目中，可以选择以下主键：
+
+Post：Post ID
+Author：Author ID
+Reply：Reply ID（可能需要创建一个新的属性作为主键）
+Secondary Reply：Secondary Reply ID（可能需要创建一个新的属性作为主键）
+确定实体间的关系：
+根据数据文件中的信息，确定实体之间的关系。例如：
+
+一个作者（Author）可以发布多篇文章（Post），一个文章（Post）只能有一个作者（Author）。这是一个一对多（1:N）关系。
+一个文章（Post）可以有多个回复（Reply），一个回复（Reply）只能属于一个文章（Post）。这是一个一对多（1:N）关系。
+一个回复（Reply）可以有多个二级回复（Secondary Reply），一个二级回复（Secondary Reply）只能属于一个回复（Reply）。这是一个一对多（1:N）关系。
+添加外键：
+根据实体间的关系，为相关实体添加外键。例如：
+
+在Reply实体中添加一个名为“Post ID”的外键，该外键引用Post实体中的主键“Post ID”。
+在Secondary Reply实体中添加一个名为“Reply ID”的外键，该外键引用Reply实体中的主键“Reply ID”。
+使用绘图工具创建ER图：
+将识别出的实体、属性、主键、外键和关系添加到ER图中。可以使用诸如Lucidchart、Draw.io、Microsoft Visio等绘图工具来创建ER图。
+
+完成以上步骤后，您将获得一个清晰、合理的ER图，为后续的关系数据库设计和实现奠定基础。
+
 ### 任务2：关系数据库设计（占总分40%）
 
 根据上述背景设计表格和列。通过“显示可视化”功能生成E-R图。简要描述表格和列的设计，包括（但不限于）表格和列的含义。 报告中需要提供以下内容：
