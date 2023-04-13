@@ -6,78 +6,98 @@
 -- 一般来说，当用户提交评论或次级评论时，应用程序应检查作者是否已经存在，如果不存在，则在插入评论或次级评论之前先插入作者。
 
 -- 1. 作者表
-CREATE TABLE authors (
-    author_id SERIAL PRIMARY KEY,
-    author_name TEXT NOT NULL,
-    registration_time TIMESTAMP NOT NULL,
-    phone TEXT UNIQUE NOT NULL
+create table authors
+(
+    author_id         serial primary key,
+    author_name       varchar(255) unique not null,
+    registration_time timestamp           not null,
+    phone             varchar(20) unique  not null
 );
 
 -- 2. 文章表
-CREATE TABLE posts (
-    post_id SERIAL PRIMARY KEY,
-    author_id INTEGER NOT NULL REFERENCES authors(author_id),
-    title TEXT NOT NULL,
-    content TEXT NOT NULL,
-    posting_time TIMESTAMP NOT NULL,
-    posting_city TEXT NOT NULL
+create table posts
+(
+    post_id      serial primary key,
+    author_name  varchar(255) not null references authors (author_name),
+    title        varchar(255) not null,
+    content      text         not null,
+    posting_time timestamp    not null,
+    posting_city varchar(255) not null
 );
 
 -- 3. 评论表
-CREATE TABLE replies (
-    reply_id SERIAL PRIMARY KEY,
-    reply_content TEXT NOT NULL,
-    reply_stars INTEGER NOT NULL,
-    reply_author INTEGER NOT NULL REFERENCES authors(author_id),
-    post_id INTEGER NOT NULL REFERENCES posts(post_id)
+create table replies
+(
+    reply_id    serial primary key,
+    content     text         not null,
+    stars       integer      not null,
+    author_name varchar(255) not null references authors (author_name),
+    post_id     integer      not null references posts (post_id)
 );
 
 -- 4. 次级评论表
-CREATE TABLE secondary_replies (
-    secondary_reply_id SERIAL PRIMARY KEY,
-    secondary_reply_content TEXT NOT NULL,
-    secondary_reply_stars INTEGER NOT NULL,
-    secondary_reply_author INTEGER NOT NULL REFERENCES authors(author_id),
-    reply_id INTEGER NOT NULL REFERENCES replies(reply_id)
+create table secondary_replies
+(
+    secondary_reply_id serial primary key,
+    content            text         not null,
+    stars              integer      not null,
+    author_name        varchar(255) not null references authors (author_name),
+    reply_id           integer      not null references replies (reply_id)
 );
 
--- 5. 分类表
-CREATE TABLE categories (
-    category_id SERIAL PRIMARY KEY,
-    category_name TEXT NOT NULL
+-- 5. 关注表
+create table followed_authors
+(
+    author_id          integer primary key references authors (author_id),
+    follower_author_id integer not null
 );
 
--- 6. 关注表
-CREATE TABLE followed_authors (
-    author_id INTEGER NOT NULL REFERENCES authors(author_id),
-    follower_author_id INTEGER NOT NULL REFERENCES authors(author_id),
-    PRIMARY KEY (author_id, follower_author_id)
+-- 6. 收藏表
+create table favorited_posts
+(
+    post_id             integer primary key references posts (post_id),
+    favorited_author_id integer not null
 );
 
--- 7. 收藏表
-CREATE TABLE favorited_posts (
-    post_id INTEGER NOT NULL REFERENCES posts(post_id),
-    favorited_author_id INTEGER NOT NULL REFERENCES authors(author_id),
-    PRIMARY KEY (post_id, favorited_author_id)
+-- 7. 分享表
+create table shared_posts
+(
+    post_id           integer primary key references posts (post_id),
+    sharing_author_id integer not null
 );
 
--- 8. 分享表
-CREATE TABLE shared_posts (
-    post_id INTEGER NOT NULL REFERENCES posts(post_id),
-    sharing_author_id INTEGER NOT NULL REFERENCES authors(author_id),
-    PRIMARY KEY (post_id, sharing_author_id)
+-- 8. 点赞表
+create table liked_posts
+(
+    post_id          integer primary key references posts (post_id),
+    liking_author_id integer not null
 );
 
--- 9. 点赞表
-CREATE TABLE liked_posts (
-    post_id INTEGER NOT NULL REFERENCES posts(post_id),
-    liking_author_id INTEGER NOT NULL REFERENCES authors(author_id),
-    PRIMARY KEY (post_id, liking_author_id)
+-- 9. 分类表
+create table categories
+(
+    category_id   serial primary key,
+    category_name varchar(255) unique not null
 );
 
 -- 10. 文章分类表
-CREATE TABLE post_categories (
-    post_id INTEGER NOT NULL REFERENCES posts(post_id),
-    category_id INTEGER NOT NULL REFERENCES categories(category_id),
-    PRIMARY KEY (post_id, category_id)
+create table post_categories
+(
+    post_id     integer primary key references posts (post_id),
+    category_id integer not null references categories (category_id)
+);
+
+-- 11. 城市表
+create table cities
+(
+    city_id   serial primary key,
+    city_name varchar(255) unique not null
+);
+
+
+-- 12. 文章城市表
+create table post_cities
+(
+    post_id integer primary key references posts (post_id),
+    city_id integer not null references cities (city_id)
 );
