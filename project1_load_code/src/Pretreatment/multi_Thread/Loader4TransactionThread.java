@@ -137,7 +137,7 @@ public class Loader4TransactionThread {
         + ");"
         + "create table post_categories\n"
         + "(\n"
-        + "    post_id     integer references posts (post_id),\n"
+        + "    post_id     integer references posts (post_id) not null,\n"
         + "    category_id integer not null references categories (category_id),\n"
         + "    constraint post_categories_pk primary key (post_id, category_id)\n"
         + ");"
