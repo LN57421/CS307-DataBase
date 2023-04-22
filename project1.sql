@@ -14,14 +14,14 @@ create table authors
     phone             bigint unique  --删除notnull，改变为bigint类型
 );
 
--- 11. 城市表，调整顺序
+-- 2. 城市表，调整顺序
 create table cities
 (
     city_name varchar(255) primary key ,--城市名字
     city_state varchar(255) not null --添加国家
 );
 
--- 2. 文章表
+-- 3. 文章表
 create table posts
 (
     post_id      integer unique primary key, --去掉自增
@@ -32,7 +32,7 @@ create table posts
     posting_city varchar(255) not null references cities(city_name) --post与城市是一对多的关系，一个post只能对应一个城市，但一个城市能对应多个post
 );
 
--- 3. 评论表
+-- 4. 评论表
 create table replies
 (
     reply_id    integer      not null primary key,
@@ -42,7 +42,7 @@ create table replies
     post_id     integer      not null references posts (post_id)
 );
 
--- 4. 次级评论表
+-- 5. 次级评论表
 create table secondary_replies
 (
     secondary_reply_id integer      primary key,
@@ -52,15 +52,15 @@ create table secondary_replies
     reply_id           integer      not null references replies (reply_id)
 );
 
--- 5. 关注表
+-- 6. 关注表
 create table followed_authors
 (
-    author_id          varchar references authors (author_id),
-    follower_author_id varchar not null,
+    author_id          varchar references authors (author_id) not null ,
+    follower_author_id varchar references authors(author_id), --改不改？
     constraint followed primary key (author_id, follower_author_id)
 );
 
--- 6. 收藏表
+-- 7. 收藏表
 create table favorite_posts
 (
     post_id             integer references posts (post_id),
@@ -68,7 +68,7 @@ create table favorite_posts
     constraint favorite_pk primary key (post_id, favorite_author_id)
 );
 
--- 7. 分享表
+-- 8. 分享表
 create table shared_posts
 (
     post_id           integer references posts (post_id),
@@ -76,7 +76,7 @@ create table shared_posts
     constraint shared_pk primary key (post_id, sharing_author_id)
 );
 
--- 8. 点赞表
+-- 9. 点赞表
 create table liked_posts
 (
     post_id          integer references posts (post_id),
@@ -84,17 +84,17 @@ create table liked_posts
     constraint liked_pk primary key (post_id, liking_author_id)
 );
 
--- 9. 分类表 --满足扩展性（可在categories新建类别）
+-- 10. 分类表 --满足扩展性（可在categories新建类别）
 create table categories
 (
     category_id   integer primary key,
     category_name varchar(255) unique not null
 );
 
--- 10. 文章分类表
+-- 11. 文章分类表
 create table post_categories
 (
-    post_id     integer references posts (post_id),
+    post_id     integer references posts (post_id) not null ,
     category_id integer not null references categories (category_id),
     constraint post_categories_pk primary key (post_id, category_id)
 );
