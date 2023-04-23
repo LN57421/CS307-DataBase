@@ -4,26 +4,26 @@ import sys
 import time
 import psycopg2 as psql
 
-filename = 'resource/posts.json'  # the path of json file
+filename = 'resource/posts_10times.json'  # the path of json file
 with open(filename) as f:
     posts = json.load(f)
-filename = 'resource/replies.json'  # the path of json file
+filename = 'resource/replies_10times.json'  # the path of json file
 with open(filename) as f:
     replies = json.load(f)
 
 
 def initDB():
     cur.execute("drop table if exists secondary_replies;"
-        + "drop table if exists replies;"
-        + "drop table if exists followed_authors;"
-        + "drop table if exists favorite_posts;"
-        + "drop table if exists shared_posts;"
-        + "drop table if exists liked_posts;"
-        + "drop table if exists post_categories;"
-        + "drop table if exists posts;"
-        + "drop table if exists authors;"
-        + "drop table if exists cities;"
-        + "drop table if exists categories;")
+                + "drop table if exists replies;"
+                + "drop table if exists followed_authors;"
+                + "drop table if exists favorite_posts;"
+                + "drop table if exists shared_posts;"
+                + "drop table if exists liked_posts;"
+                + "drop table if exists post_categories;"
+                + "drop table if exists posts;"
+                + "drop table if exists authors;"
+                + "drop table if exists cities;"
+                + "drop table if exists categories;")
     cur.execute("""create table authors
         (
             author_id         varchar primary key ,
@@ -73,7 +73,7 @@ def initDB():
         -- 5. 关注表
         create table followed_authors
         (
-            author_id          varchar references authors (author_id),
+            author_id          varchar references authors (author_id) not null ,
             follower_author_id varchar references authors(author_id), --改不改？
             constraint followed primary key (author_id, follower_author_id)
         );
@@ -112,69 +112,25 @@ def initDB():
         -- 10. 文章分类表
         create table post_categories
         (
-            post_id     integer references posts (post_id),
+            post_id     integer references posts (post_id) not null ,
             category_id integer not null references categories (category_id),
             constraint post_categories_pk primary key (post_id, category_id)
         );
         """)
 
-def init():
-    sqlSelectName = """select author_name from authors;"""
-    sqlSelectID = """select author_id from authors;"""
-    sqlSelectCategories = """select * from categories"""
-    sqlSelectReplySize = """select max(reply_id) from replies"""
-    sqlSelectSecondReplySize = """select max(secondary_reply_id) from secondary_replies"""
-    sqlSelectCity = """select * from cities"""
-    cur.execute(sqlSelectName)
-    out1 = cur.fetchall()
-    cur.execute(sqlSelectID)
-    out2 = cur.fetchall()
-    cur.execute(sqlSelectCategories)
-    out3 = cur.fetchall()
-    cur.execute(sqlSelectReplySize)
-    out4 = cur.fetchone()
-    cur.execute(sqlSelectSecondReplySize)
-    out5 = cur.fetchone()
-    cur.execute(sqlSelectCity)
-    out6 = cur.fetchall()
-    reply_size = out4[0]
-    secondary_reply_size = out5[0]
-    author_name = []
-    author_id = []
-    author_name_id = {}
-    categoryAndID = {}
-    cities = {}
-    connect.commit()
-    for param in out1:
-        author_name.append(param[0])
-    for param in out2:
-        author_id.append(param[0])
-    for param in out3:
-        categoryAndID[param[1]] = param[0]
-    for i in range(len(author_name)):
-        author_name_id[author_name[i]] = author_id[i]
-    if reply_size is None:
-        reply_size = 0
-    if secondary_reply_size is None:
-        secondary_reply_size = 0
-    for param in out6:
-        cities[param[0]] = param[1]
-    return author_name, author_id, author_name_id, categoryAndID, reply_size, secondary_reply_size, cities
 
-
-def initPostAuthor():
+def initPostAuthor(cnt):
     for post in posts:
         sqlPost = """INSERT INTO authors (author_id, author_name, registration_time, phone) VALUES (%s, %s, %s, %s)"""
         param = [post['AuthorID'], post['Author'], post['AuthorRegistrationTime'], post['AuthorPhone']]
         try:
             cur.execute(sqlPost, param)
-            author_name.append(post['Author'])
-            author_id.append(post['AuthorID'])
-            author_name_id[post['Author']] = post['AuthorID']
-            #print('OK')
+            # print('OK')
+            cnt += 1
         except psql.Error as e:
             print('already Exist')
             print(e)
+    return cnt
 
 
 # for post in posts:
@@ -182,71 +138,53 @@ def initPostAuthor():
 #     print(post['Post ID'])
 #     #print(json.dumps(post, indent=1))
 
-def initAllAuthor():
+def initAllAuthor(cnt):
     sqlPost = """INSERT INTO authors (author_id, author_name, registration_time, phone) VALUES (%s, %s, %s, %s)"""
-    param = []
-    for post in posts:
-        param.extend(post['AuthorFollowedBy'])
-        param.extend(post['AuthorFavorite'])
-        param.extend(post['AuthorShared'])
-        param.extend(post['AuthorLiked'])
-    for reply in replies:
-        param.append(reply['ReplyAuthor'])
-        param.append(reply['SecondaryReplyAuthor'])
-    param = set(param)
-    for author in param:
-        if author not in author_name:
-            newID = random.randint(0, sys.maxsize)
-            while newID in author_id:
-                newID = random.randint(sys.maxsize)
-            diffTime = random.randint(0, 100000000)
-            now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time() - diffTime))
-            phone = None
-            values = [newID, author, now, phone]
-            author_name.append(author)
-            author_id.append(newID)
-            author_name_id[author] = newID
-            try:
-                cur.execute(sqlPost, values)
-                #print("OK")
-            except Exception as e:
-                print(e)
+    for author in OtherAuthor.keys():
+        diffTime = random.randint(0, 100000000)
+        now = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time() - diffTime))
+        phone = None
+        values = [OtherAuthor[author], author, now, phone]
+        try:
+            cur.execute(sqlPost, values)
+            # print("OK")
+            cnt += 1
+        except Exception as e:
+            print(e)
+    return cnt
 
 
-def initCity():
+def initCity(cnt):
     sqlCity = """INSERT INTO cities (city_name, city_state) VALUES (%s, %s)"""
-    for post in posts:
-        city_name_state = str(post['PostingCity']).rsplit(", ", 1)
-        if city_name_state[0] not in cities.keys():
-            try:
-                cur.execute(sqlCity, city_name_state)
-                cities[city_name_state[0]] = city_name_state[1]
-                #print("OK")
-            except psql.Error as e:
-                print(e)
+    for city in Cities.keys():
+        city_name_state = [city, Cities[city]]
+        try:
+            cur.execute(sqlCity, city_name_state)
+            # print("OK")
+            cnt += 1
+        except psql.Error as e:
+            print(e)
+    return cnt
 
 
-def initCategories():
+def initCategories(cnt):
     sqlCate = """INSERT INTO categories (category_id, category_name) VALUES (%s, %s)"""
-    for post in posts:
-        category = post['Category']
-        for param in category:
-            if param not in categoryAndID:
-                cID = len(categoryAndID) + 1
-                categoryAndID[param] = cID
-                vaules = [cID, param]
-                try:
-                    cur.execute(sqlCate, vaules)
-                    #print('OK')
-                except psql.Error as e:
-                    print(e)
+    for param in Cats.keys():
+        vaules = [Cats[param], param]
+        try:
+            cur.execute(sqlCate, vaules)
+            # print('OK')
+            cnt += 1
+        except psql.Error as e:
+            print(e)
+    return cnt
 
 
-def initPost():
+def initPost(cnt):
     sqlPost = """INSERT INTO posts (post_id, author_id, title, content, posting_time, posting_city) VALUES (%s, %s, %s, %s, %s, %s);"""
     for post in posts:
         post_id = post['PostID']
-        authorID = author_name_id[post['Author']]
+        authorID = AllAuthor[post['Author']]
         title = post['Title']
         content = post['Content']
         posting_time = post['PostingTime']
@@ -254,121 +192,137 @@ def initPost():
         param = [post_id, authorID, title, content, posting_time, posting_city]
         try:
             cur.execute(sqlPost, param)
-            #print('OK')
+            # print('OK')
+            cnt += 1
         except psql.Error as e:
             print(e)
+    return cnt
 
 
-def initPost_categories():
+def initPost_categories(cnt):
     sqlP_C = """INSERT INTO post_categories (post_id, category_id) VALUES (%s, %s);"""
     for post in posts:
         post_id = post['PostID']
         category = post['Category']
         for val in category:
-            param = [post_id, categoryAndID[val]]
+            param = [post_id, Cats[val]]
             try:
                 cur.execute(sqlP_C, param)
-                #print('OK')
-            except psql.Error as e:
-                print(e)
-
-
-def initLiked_authors():
-    sqlLiked = """INSERT INTO liked_posts (post_id, liking_author_id) VALUES (%s, %s);"""
-    for post in  posts:
-        post_id = post['PostID']
-        likedParam = post['AuthorLiked']
-        for author in likedParam:
-            param = [post_id, author_name_id[author]]
-            try:
-                cur.execute(sqlLiked, param)
+                cnt += 1
                 # print('OK')
             except psql.Error as e:
                 print(e)
+    return cnt
 
 
-def initShare_authors():
+def initLiked_authors(cnt):
+    sqlLiked = """INSERT INTO liked_posts (post_id, liking_author_id) VALUES (%s, %s);"""
+    for post in posts:
+        post_id = post['PostID']
+        likedParam = post['AuthorLiked']
+        for author in likedParam:
+            param = [post_id, AllAuthor[author]]
+            try:
+                cur.execute(sqlLiked, param)
+                cnt += 1
+                # print('OK')
+            except psql.Error as e:
+                print(e)
+    return cnt
+
+
+def initShare_authors(cnt):
     sqlShare = """INSERT INTO shared_posts (post_id, sharing_author_id) VALUES (%s, %s);"""
     for post in posts:
         post_id = post['PostID']
         shareParam = post['AuthorShared']
         for author in shareParam:
-            param = [post_id, author_name_id[author]]
+            param = [post_id, AllAuthor[author]]
             try:
                 cur.execute(sqlShare, param)
-                #print('OK')
+                # print('OK')
+                cnt += 1
             except psql.Error as e:
                 print(e)
+    return cnt
 
 
-def initFavor_authors():
+def initFavor_authors(cnt):
     sqlFavor = """INSERT INTO favorite_posts (post_id, favorite_author_id) VALUES (%s, %s);"""
     for post in posts:
         post_id = post['PostID']
         favorParam = post['AuthorFavorite']
         for author in favorParam:
-            param = [post_id, author_name_id[author]]
+            param = [post_id, AllAuthor[author]]
             try:
                 cur.execute(sqlFavor, param)
-                #print('OK')
+                cnt += 1
+                # print('OK')
             except psql.Error as e:
                 print(e)
+    return cnt
 
 
-def initFollowed_authors():
+def initFollowed_authors(cnt):
     sqlPost = """INSERT INTO followed_authors (author_id, follower_author_id) VALUES (%s, %s);"""
     for post in posts:
         author = post['Author']
         AuthorFollowedBy = post['AuthorFollowedBy']
         for follow in AuthorFollowedBy:
-            param = [author_name_id[author], author_name_id[follow]]
+            param = [AllAuthor[author], AllAuthor[follow]]
             try:
                 cur.execute(sqlPost, param)
-                #print('OK')
+                cnt += 1
+                # print('OK')
             except psql.Error as e:
                 print(e)
+    return cnt
 
 
-def initReplies(replySize, secondaryReplySize):
+def initReplies(replySize, secondaryReplySize, cnt):
     sqlReply = """INSERT INTO replies (reply_id, content, stars, author_id, post_id) VALUES (%s, %s, %s, %s, %s)"""
     sqlSecondReply = """INSERT INTO secondary_replies (secondary_reply_id, content, stars, author_id, reply_id) VALUES (%s, %s, %s, %s, %s)"""
     currentPostID = replies[0]['PostID']
-    currentReply = [replies[0]['ReplyContent'], replies[0]['ReplyStars'], author_name_id[replies[0]['ReplyAuthor']]]
+    currentReply = [replies[0]['ReplyContent'], replies[0]['ReplyStars'], AllAuthor[replies[0]['ReplyAuthor']]]
     replySize = replySize + 1
     try:
         cur.execute(sqlReply, [replySize, replies[0]['ReplyContent'], replies[0]['ReplyStars'],
-                               author_name_id[replies[0]['ReplyAuthor']], currentPostID])
+                               AllAuthor[replies[0]['ReplyAuthor']], currentPostID])
+        cnt += 1
     except psql.Error as e:
         print(e)
     for reply in replies:
         post_id = reply['PostID']
-        single_reply = [reply['ReplyContent'], reply['ReplyStars'], author_name_id[reply['ReplyAuthor']]]
+        single_reply = [reply['ReplyContent'], reply['ReplyStars'], AllAuthor[reply['ReplyAuthor']]]
         if post_id == currentPostID:
             if single_reply == currentReply:
                 secondaryReplySize = secondaryReplySize + 1  # 目前未处理secondaryReply为空的情况
                 param = [secondaryReplySize, reply['SecondaryReplyContent'], reply['SecondaryReplyStars'],
-                         author_name_id[reply['SecondaryReplyAuthor']], replySize]
+                         AllAuthor[reply['SecondaryReplyAuthor']], replySize]
                 try:
                     cur.execute(sqlSecondReply, param)
-                    #print('OK')
+                    cnt += 1
+                    # print('OK')
                 except psql.Error as e:
                     print(e)
             else:
                 currentReply = single_reply
                 replySize = replySize + 1
                 secondaryReplySize = secondaryReplySize + 1
-                param1 = [replySize, reply['ReplyContent'], reply['ReplyStars'], author_name_id[reply['ReplyAuthor']],
+                param1 = [replySize, reply['ReplyContent'], reply['ReplyStars'], AllAuthor[reply['ReplyAuthor']],
                           currentPostID]
                 param2 = [secondaryReplySize, reply['SecondaryReplyContent'], reply['SecondaryReplyStars'],
-                          author_name_id[reply['SecondaryReplyAuthor']], replySize]
+                          AllAuthor[reply['SecondaryReplyAuthor']], replySize]
                 try:
                     cur.execute(sqlReply, param1)
-                    #print('OK')
+                    cnt += 1
+                    # print('OK')
                 except psql.Error as e:
                     print(e)
                 try:
                     cur.execute(sqlSecondReply, param2)
-                    #print('OK')
+                    cnt += 1
+                    # print('OK')
                 except psql.Error as e:
                     print(e)
         else:
@@ -376,43 +330,99 @@ def initReplies(replySize, secondaryReplySize):
             currentReply = single_reply
             replySize = replySize + 1
             secondaryReplySize = secondaryReplySize + 1
-            param1 = [replySize, reply['ReplyContent'], reply['ReplyStars'], author_name_id[reply['ReplyAuthor']],
+            param1 = [replySize, reply['ReplyContent'], reply['ReplyStars'], AllAuthor[reply['ReplyAuthor']],
                       currentPostID]
             param2 = [secondaryReplySize, reply['SecondaryReplyContent'], reply['SecondaryReplyStars'],
-                      author_name_id[reply['SecondaryReplyAuthor']], replySize]
+                      AllAuthor[reply['SecondaryReplyAuthor']], replySize]
             try:
                 cur.execute(sqlReply, param1)
+                cnt += 1
             except psql.Error as e:
                 print(e)
             try:
                 cur.execute(sqlSecondReply, param2)
+                cnt += 1
             except psql.Error as e:
                 print(e)
+    return cnt
+
+
+def loadOtherAuthor():
+    l1 = []
+    l2 = {}
+    l3 = {}
+    for post in posts:
+        l1.extend(post['AuthorFavorite'])
+        l1.extend(post['AuthorShared'])
+        l1.extend(post['AuthorLiked'])
+        l1.extend(post['AuthorFollowedBy'])
+        l2[post['Author']] = post['AuthorID']
+    for reply in replies:
+        l1.append(reply['SecondaryReplyAuthor'])
+        l1.append(reply['ReplyAuthor'])
+    l1 = set(l1)
+    for author in l1:
+        newID = random.randint(0, sys.maxsize)
+        while newID in l2.values() or newID in l3.values():
+            newID = random.randint(sys.maxsize)
+        l3[author] = newID
+    for author in l2:
+        try:
+            l3.pop(author)
+        except Exception as e:
+            pass
+
+    return l2, l3
+
+
+def loadCategory():
+    l1 = {}
+    for post in posts:
+        param = post['Category']
+        for cat in param:
+            if cat not in l1.keys():
+                l1[cat] = len(l1)
+    return l1
+
+
+def loadCity():
+    l1 = {}
+    for post in posts:
+        city_name_state = str(post['PostingCity']).rsplit(", ", 1)
+        l1[city_name_state[0]] = city_name_state[1]
+    return l1
 
 
 if __name__ == '__main__':
-    connect = psql.connect(host="localhost", port=5432, user="postgres", password="123456", database="Project1")
+    connect = psql.connect(host="localhost", port=5432, user="postgres", password="123456", database="Project1_java")
     cur = connect.cursor()
     connect.autocommit = False
     timeNeed = []
     testcase = 3
+    PostAuthor, OtherAuthor = loadOtherAuthor()
+    AllAuthor = {}
+    AllAuthor.update(PostAuthor)
+    AllAuthor.update(OtherAuthor)
+    Cats = loadCategory()
+    Cities = loadCity()
     for i in range(testcase):
+        cnt = 0
         initDB()
         now = time.time()
-        author_name, author_id, author_name_id, categoryAndID, reply_size, secondary_reply_size, cities = init()
-        initPostAuthor()
-        initAllAuthor()
-        initCategories()
-        initCity()
-        initPost()
-        initPost_categories()
-        initShare_authors()
-        initFavor_authors()
-        initLiked_authors()
-        initFollowed_authors()
-        initReplies(reply_size, secondary_reply_size)
+        cnt = initPostAuthor(cnt)
+        cnt = initAllAuthor(cnt)
+        cnt = initCategories(cnt)
+        cnt = initCity(cnt)
+        cnt = initPost(cnt)
+        cnt = initPost_categories(cnt)
+        cnt = initShare_authors(cnt)
+        cnt = initFavor_authors(cnt)
+        cnt = initLiked_authors(cnt)
+        cnt = initFollowed_authors(cnt)
+        cnt = initReplies(0, 0, cnt)
         connect.commit()
         then = time.time()
+        print(cnt, "records", '{:.3f} records/s'.format(cnt / (then - now)))
         print('single import time: {:.3f}/s'.format(then - now))
         timeNeed.append(then - now)
     avgTime = 0
