@@ -395,26 +395,26 @@ public class Loader5BatchThread {
       ExecutorService service1 = Executors.newFixedThreadPool(4);//导入postAuthor,city,category,其他author
       ExecutorService service2 = Executors.newFixedThreadPool(1);//导入post
       ExecutorService service3 = Executors.newFixedThreadPool(6);//导入follow，like，share，favor，reply，P_C
-      service1.execute(new LoadPostAuthor(posts, 500, con[0]));
-      service1.execute(new LoadOtherAuthor(posts, otherAuthorAndID, con[1], 1000));
-      service1.execute(new LoadCity(posts, cities, con[2], 100));
-      service1.execute(new LoadCategories(posts, categories, con[3],100));
+      service1.execute(new LoadPostAuthor(posts, con[0]));
+      service1.execute(new LoadOtherAuthor(posts, otherAuthorAndID, con[1]));
+      service1.execute(new LoadCity(posts, cities, con[2]));
+      service1.execute(new LoadCategories(posts, categories, con[3]));
       service1.shutdown();
       while (!service1.isTerminated()) {
       }
-      service2.execute(new LoadPostContent(posts, con[4], 100));
+      service2.execute(new LoadPostContent(posts, con[4]));
       service2.shutdown();
       authorAndID.putAll(otherAuthorAndID);
       while (!service2.isTerminated()) {
       }
-      service3.execute(new LoadFavor(posts, authorAndID, con[5], 1000));
-      service3.execute(new LoadLiked(posts, authorAndID, con[6], 1000));
-      service3.execute(new LoadShare(posts, authorAndID, con[7], 1000));
-      service3.execute(new LoadFollowedAuthors(posts, authorAndID, con[8], 1000));
-      service3.execute(new LoadPostCategories(posts, categories, con[9], 1000));
+      service3.execute(new LoadFavor(posts, authorAndID, con[5]));
+      service3.execute(new LoadLiked(posts, authorAndID, con[6]));
+      service3.execute(new LoadShare(posts, authorAndID, con[7]));
+      service3.execute(new LoadFollowedAuthors(posts, authorAndID, con[8]));
+      service3.execute(new LoadPostCategories(posts, categories, con[9]));
       service3.execute(
           new LoadReply(replyAndSecondReplySize[0], replyAndSecondReplySize[1], replies,
-              authorAndID, con[10], 1000));
+              authorAndID, con[10]));
       service3.shutdown();
       while (!service3.isTerminated()) {
       }

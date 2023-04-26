@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class LoadPostAuthor implements Runnable{
-
-  int BATCH_SIZE = 1000;
   List<Post> posts;
 
   PreparedStatement stmtInsert;
@@ -23,12 +21,11 @@ public class LoadPostAuthor implements Runnable{
     LoadPostAuthor.cnt++;
   }
 
-  public LoadPostAuthor(List<Post> posts, int BATCH_SIZE, Connection con)
+  public LoadPostAuthor(List<Post> posts, Connection con)
       throws SQLException {
     this.posts = posts;
     stmtInsert = con.prepareStatement("INSERT INTO authors (author_id, author_name, registration_time, phone) VALUES (?,?,?,?);");
     this.con = con;
-    this.BATCH_SIZE = BATCH_SIZE;
   }
 
   @Override
@@ -39,19 +36,14 @@ public class LoadPostAuthor implements Runnable{
         stmtInsert.setString(2, post.getAuthor());
         stmtInsert.setTimestamp(3, Timestamp.valueOf(post.getAuthorRegistrationTime()));
         stmtInsert.setLong(4, Long.parseLong(post.getAuthorPhone()));
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         count();
-        if (LoadPostAuthor.cnt % BATCH_SIZE == 0){
-          stmtInsert.executeBatch();
-        }
       }catch (SQLException e){
         System.out.println(e);
       }
     });
     try {
-      if (LoadPostAuthor.cnt % BATCH_SIZE != 0){
-        stmtInsert.executeBatch();
-      }
+      stmtInsert.executeBatch();
       con.commit();
       stmtInsert.close();
     } catch (SQLException e) {

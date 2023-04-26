@@ -27,8 +27,6 @@ import java.util.Scanner;
 
 public class Loader3Batch {
 
-  static final int BATCH_SIZE = 1000;
-
   static int cnt;
   private static Connection con = null;
   private static Statement stmt = null;
@@ -327,12 +325,8 @@ public class Loader3Batch {
         stmtInsert.setString(2, s);
         stmtInsert.setTimestamp(3, Timestamp.valueOf(timeF));
         stmtInsert.setNull(4, Types.BIGINT);
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         cnt++;
-        if (cnt % BATCH_SIZE == 0) {
-          stmtInsert.executeBatch();
-          stmtInsert.clearBatch();
-        }
       } catch (SQLException e) {
         System.out.println(e);
       }
@@ -348,12 +342,8 @@ public class Loader3Batch {
         stmtInsert.setString(2, post.getAuthor());
         stmtInsert.setTimestamp(3, Timestamp.valueOf(post.getAuthorRegistrationTime()));
         stmtInsert.setLong(4, Long.parseLong(post.getAuthorPhone()));
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         cnt++;
-        if (cnt % BATCH_SIZE == 0) {
-          stmtInsert.executeBatch();
-          stmtInsert.clearBatch();
-        }
       } catch (Exception e) {
         System.out.println(e);
       }
@@ -366,12 +356,8 @@ public class Loader3Batch {
       try {
         stmtInsert.setString(1, key);
         stmtInsert.setString(2, cities.get(key));
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         cnt++;
-        if (cnt % BATCH_SIZE == 0) {
-          stmtInsert.executeBatch();
-          stmtInsert.clearBatch();
-        }
       } catch (SQLException e) {
         System.out.println(e);
       }
@@ -386,12 +372,8 @@ public class Loader3Batch {
       try {
         stmtInsert.setInt(1, categories.get(key));
         stmtInsert.setString(2, key);
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         cnt++;
-        if (cnt % BATCH_SIZE == 0) {
-          stmtInsert.executeBatch();
-          stmtInsert.clearBatch();
-        }
       } catch (SQLException e) {
         System.out.println(e);
       }
@@ -410,11 +392,8 @@ public class Loader3Batch {
         stmtInsert.setString(4, post.getContent());
         stmtInsert.setTimestamp(5, Timestamp.valueOf(post.getPostingTime()));
         stmtInsert.setString(6, city);
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         cnt++;
-        if (cnt % BATCH_SIZE == 0) {
-          stmtInsert.executeBatch();
-        }
       } catch (SQLException e) {
         System.out.println(e);
       }
@@ -430,11 +409,8 @@ public class Loader3Batch {
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setInt(2, categories.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           cnt++;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
@@ -452,11 +428,8 @@ public class Loader3Batch {
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setString(2, authorAndID.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           cnt++;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
@@ -474,11 +447,8 @@ public class Loader3Batch {
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setString(2, authorAndID.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           cnt++;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
@@ -496,11 +466,8 @@ public class Loader3Batch {
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setString(2, authorAndID.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           cnt++;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
@@ -518,11 +485,8 @@ public class Loader3Batch {
         try {
           stmtInsert.setString(1, authorAndID.get(post.getAuthor()));
           stmtInsert.setString(2, authorAndID.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           cnt++;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
@@ -546,7 +510,7 @@ public class Loader3Batch {
       stmtInsert1.setInt(3, replies.get(0).getReplyStars());
       stmtInsert1.setString(4, authorAndID.get(replies.get(0).getReplyAuthor()));
       stmtInsert1.setInt(5, postId);
-      stmtInsert1.executeUpdate();
+      stmtInsert1.addBatch();
       replySize += 1;
       cnt++;
     } catch (SQLException e) {
@@ -563,12 +527,9 @@ public class Loader3Batch {
             stmtInsert2.setInt(3, replies1.getSecondaryReplyStars());
             stmtInsert2.setString(4, authorAndID.get(replies1.getSecondaryReplyAuthor()));
             stmtInsert2.setInt(5, replySize);
-            stmtInsert2.executeUpdate();
+            stmtInsert2.addBatch();
             secondReplySize += 1;
             cnt++;
-            if (cnt % BATCH_SIZE == 0) {
-              stmtInsert.executeBatch();
-            }
           } catch (SQLException e) {
             System.out.println(e);
           }
@@ -580,23 +541,17 @@ public class Loader3Batch {
             stmtInsert1.setInt(3, replies1.getReplyStars());
             stmtInsert1.setString(4, authorAndID.get(replies1.getReplyAuthor()));
             stmtInsert1.setInt(5, postId);
-            stmtInsert1.executeUpdate();
+            stmtInsert1.addBatch();
             cnt += 1;
-            if (cnt % BATCH_SIZE == 0) {
-              stmtInsert.executeBatch();
-            }
             stmtInsert2.setInt(1, secondReplySize + 1);
             stmtInsert2.setString(2, replies1.getSecondaryReplyContent());
             stmtInsert2.setInt(3, replies1.getSecondaryReplyStars());
             stmtInsert2.setString(4, authorAndID.get(replies1.getSecondaryReplyAuthor()));
             stmtInsert2.setInt(5, replySize + 1);
-            stmtInsert2.executeUpdate();
+            stmtInsert2.addBatch();
             secondReplySize += 1;
             replySize += 1;
             cnt += 1;
-            if (cnt % BATCH_SIZE == 0) {
-              stmtInsert.executeBatch();
-            }
           } catch (SQLException e) {
             System.out.println(e);
           }
@@ -610,30 +565,33 @@ public class Loader3Batch {
           stmtInsert1.setInt(3, replies1.getReplyStars());
           stmtInsert1.setString(4, authorAndID.get(replies1.getReplyAuthor()));
           stmtInsert1.setInt(5, postId);
-          stmtInsert1.executeUpdate();
+          stmtInsert1.addBatch();
           cnt += 1;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
           stmtInsert2.setInt(1, secondReplySize + 1);
           stmtInsert2.setString(2, replies1.getSecondaryReplyContent());
           stmtInsert2.setInt(3, replies1.getSecondaryReplyStars());
           stmtInsert2.setString(4, authorAndID.get(replies1.getSecondaryReplyAuthor()));
           stmtInsert2.setInt(5, replySize + 1);
-          stmtInsert2.executeUpdate();
+          stmtInsert2.addBatch();
           secondReplySize += 1;
           replySize += 1;
           cnt += 1;
-          if (cnt % BATCH_SIZE == 0) {
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
       }
     }
+    stmtInsert1.executeBatch();
+    stmtInsert2.executeBatch();
+    con.commit();
     stmtInsert1.close();
     stmtInsert2.close();
+  }
+
+  public static void exe() throws SQLException {
+    stmtInsert.executeBatch();
+    con.commit();
+    stmtInsert.clearBatch();
   }
 
   public static void main(String[] args) throws SQLException {
@@ -654,28 +612,33 @@ public class Loader3Batch {
     Map<String, String> cities = new HashMap<>();
     int[] replyAndSecondReplySize = init(initOtherAuthorAndID, initAuthorAndID, categories, cities,
         posts, replies);
+    Map<String, String> authorAndID = new HashMap<>();
+    authorAndID.putAll(initOtherAuthorAndID);
+    authorAndID.putAll(initAuthorAndID);
     for (int i = 0; i < testCase; i++) {
       initDB();
-      Map<String, String> otherAuthorAndID = new HashMap<>();
-      otherAuthorAndID.putAll(initOtherAuthorAndID);
-      Map<String, String> authorAndID = new HashMap<>();
-      authorAndID.putAll(initAuthorAndID);
       long start = System.currentTimeMillis();
-      loadOtherAuthor(posts, otherAuthorAndID);
+      loadOtherAuthor(posts, initOtherAuthorAndID);
+      exe();
       loadPostAuthor(posts);
-      authorAndID.putAll(otherAuthorAndID);
+      exe();
       loadCategories(posts, categories);
+      exe();
       loadCity(posts, cities);
+      exe();
       loadPostContent(posts);
+      exe();
       loadPostCategories(posts, categories);
+      exe();
       loadFavor(posts, authorAndID);
+      exe();
       loadShare(posts, authorAndID);
+      exe();
       loadLiked(posts, authorAndID);
+      exe();
       loadFollowedAuthors(posts, authorAndID);
+      exe();
       loadReply(replyAndSecondReplySize[0], replyAndSecondReplySize[1], replies, authorAndID);
-      if (cnt % BATCH_SIZE != 0) {
-        stmtInsert.executeBatch();
-      }
       con.commit();
       long end = System.currentTimeMillis();
       System.out.println(cnt + " records successfully loaded");

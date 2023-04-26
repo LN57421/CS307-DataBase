@@ -9,8 +9,6 @@ import java.util.Map;
 
 public class LoadLiked implements Runnable{
 
-  int BATCH_SIZE = 1000;
-
   List<Post> posts;
 
   Map<String, String> authorAndID;
@@ -26,12 +24,11 @@ public class LoadLiked implements Runnable{
   }
 
   public LoadLiked(List<Post> posts, Map<String, String> authorAndID,
-      Connection con, int BATCH_SIZE) throws SQLException {
+      Connection con) throws SQLException {
     this.posts = posts;
     this.authorAndID = authorAndID;
     this.stmtInsert = con.prepareStatement("INSERT INTO liked_posts (post_id, liking_author_id) VALUES (?,?);");
     this.con = con;
-    this.BATCH_SIZE = BATCH_SIZE;
   }
   @Override
   public void run() {
@@ -41,20 +38,15 @@ public class LoadLiked implements Runnable{
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setString(2, authorAndID.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           count();
-          if (LoadLiked.cnt % BATCH_SIZE == 0){
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
       });
     });
     try {
-      if (LoadLiked.cnt % BATCH_SIZE != 0){
-        stmtInsert.executeBatch();
-      }
+      stmtInsert.executeBatch();
       con.commit();
       stmtInsert.close();
     } catch (SQLException e) {

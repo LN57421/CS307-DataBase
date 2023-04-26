@@ -13,8 +13,6 @@ import java.util.Random;
 
 public class LoadOtherAuthor implements Runnable {
 
-  int BATCH_SIZE;
-
   List<Post> posts;
 
   Map<String, String> authorAndID;
@@ -26,14 +24,13 @@ public class LoadOtherAuthor implements Runnable {
   static int cnt = 0;
 
   public LoadOtherAuthor(List<Post> posts, Map<String, String> authorAndID,
-      Connection con,int BATCH_SIZE) throws SQLException {
+      Connection con) throws SQLException {
     this.posts = posts;
     this.authorAndID = authorAndID;
     this.stmtInsert = stmtInsert;
     this.stmtInsert = con.prepareStatement(
         "INSERT INTO authors (author_id, author_name, registration_time, phone) VALUES (?,?,?,?);");
     this.con = con;
-    this.BATCH_SIZE = BATCH_SIZE;
   }
 
   public static synchronized void count(){
@@ -52,21 +49,16 @@ public class LoadOtherAuthor implements Runnable {
         stmtInsert.setString(2, s);
         stmtInsert.setTimestamp(3, Timestamp.valueOf(timeF));
         stmtInsert.setNull(4, Types.BIGINT);
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         count();
-        if (LoadOtherAuthor.cnt % BATCH_SIZE == 0){
-          stmtInsert.executeBatch();
-        }
       } catch (SQLException e) {
         System.out.println(e);
       }
     });
     try {
-      if (LoadOtherAuthor.cnt % BATCH_SIZE != 0){
-        stmtInsert.executeBatch();
-      }
-      stmtInsert.close();
+      stmtInsert.executeBatch();
       con.commit();
+      stmtInsert.close();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

@@ -9,8 +9,6 @@ import java.util.Map;
 
 public class LoadShare implements Runnable{
 
-  int BATCH_SIZE;
-
   List<Post> posts;
 
   Map<String, String> authorAndID;
@@ -26,12 +24,11 @@ public class LoadShare implements Runnable{
   }
 
   public LoadShare(List<Post> posts, Map<String, String> authorAndID,
-      Connection con, int BATCH_SIZE) throws SQLException {
+      Connection con) throws SQLException {
     this.posts = posts;
     this.authorAndID = authorAndID;
     this.stmtInsert = con.prepareStatement("INSERT INTO shared_posts (post_id, sharing_author_id) VALUES (?,?);");
     this.con = con;
-    this.BATCH_SIZE = BATCH_SIZE;
   }
 
   @Override
@@ -42,20 +39,15 @@ public class LoadShare implements Runnable{
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setString(2, authorAndID.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           count();
-          if (LoadShare.cnt % BATCH_SIZE == 0){
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
       });
     });
     try {
-      if (LoadShare.cnt % BATCH_SIZE != 0){
-        stmtInsert.executeBatch();
-      }
+      stmtInsert.executeBatch();
       con.commit();
       stmtInsert.close();
     } catch (SQLException e) {

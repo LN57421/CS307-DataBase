@@ -9,8 +9,6 @@ import java.util.Map;
 
 public class LoadPostCategories implements Runnable {
 
-  int BATCH_SIZE;
-
   List<Post> posts;
 
   Map<String, Integer> categories;
@@ -21,15 +19,13 @@ public class LoadPostCategories implements Runnable {
 
   static int cnt = 0;
 
-  public LoadPostCategories(List<Post> posts, Map<String, Integer> categories, Connection con,
-      int BATCH_SIZE)
+  public LoadPostCategories(List<Post> posts, Map<String, Integer> categories, Connection con)
       throws SQLException {
     this.posts = posts;
     this.categories = categories;
     this.stmtInsert = con.prepareStatement(
         "INSERT INTO post_categories (post_id, category_id) VALUES (?,?);");
     this.con = con;
-    this.BATCH_SIZE = BATCH_SIZE;
   }
 
   public static synchronized void count() {
@@ -43,20 +39,15 @@ public class LoadPostCategories implements Runnable {
         try {
           stmtInsert.setInt(1, post.getPostID());
           stmtInsert.setInt(2, categories.get(s));
-          stmtInsert.executeUpdate();
+          stmtInsert.addBatch();
           count();
-          if (LoadPostCategories.cnt % BATCH_SIZE == 0){
-            stmtInsert.executeBatch();
-          }
         } catch (SQLException e) {
           System.out.println(e);
         }
       });
     });
     try {
-      if (LoadPostCategories.cnt % BATCH_SIZE != 0){
-        stmtInsert.executeBatch();
-      }
+      stmtInsert.executeBatch();
       con.commit();
       stmtInsert.close();
     } catch (SQLException e) {

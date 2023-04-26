@@ -9,8 +9,6 @@ import java.util.List;
 
 public class LoadPostContent implements Runnable{
 
-  int BATCH_SIZE;
-
   List<Post> posts;
 
   PreparedStatement stmtInsert;
@@ -19,11 +17,10 @@ public class LoadPostContent implements Runnable{
 
   static int cnt = 0;
 
-  public LoadPostContent(List<Post> posts, Connection con, int BATCH_SIZE) throws SQLException {
+  public LoadPostContent(List<Post> posts, Connection con) throws SQLException {
     this.posts = posts;
     this.stmtInsert = con.prepareStatement("INSERT INTO posts (post_id, author_id, title, content, posting_time, posting_city) VALUES (?,?,?,?,?,?);");
     this.con = con;
-    this.BATCH_SIZE = BATCH_SIZE;
   }
 
   public static synchronized void count(){
@@ -41,19 +38,14 @@ public class LoadPostContent implements Runnable{
         stmtInsert.setString(4, post.getContent());
         stmtInsert.setTimestamp(5, Timestamp.valueOf(post.getPostingTime()));
         stmtInsert.setString(6, city);
-        stmtInsert.executeUpdate();
+        stmtInsert.addBatch();
         count();
-        if (LoadPostContent.cnt % BATCH_SIZE != 0){
-          stmtInsert.executeBatch();
-        }
       } catch (SQLException e) {
         System.out.println(e);
       }
     }
     try {
-      if (LoadPostContent.cnt % BATCH_SIZE != 0){
-        stmtInsert.executeBatch();
-      }
+      stmtInsert.executeBatch();
       con.commit();
       stmtInsert.close();
     } catch (SQLException e) {
