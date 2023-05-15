@@ -8,15 +8,392 @@
 
 为提供访问数据库系统的基本功能，需要构建一个后端库，该库公开一组**应用程序**（即使用python java等后端语言编写的程序）编程接口(API)。下面列出了每个API的一般描述。
 
+
+
+不确定的地方：我觉得API接口对应的@PostMapping还需要调整
+
+![image-20230515221955139](C:\Users\nian5\AppData\Roaming\Typora\typora-user-images\image-20230515221955139.png)
+
+`@GetMapping("/users/{userId}/favoritePosts")` 是一个Spring MVC中的注解，表示该方法将处理HTTP的GET请求。
+
+这个注解有两部分：
+
+1. `@GetMapping`：这是Spring MVC中的一个注解，表示该方法将处理HTTP的GET请求。HTTP协议中有多种请求方法，包括GET、POST、PUT、DELETE等，其中GET通常用于请求服务器发送某些资源。
+2. `"/users/{userId}/favoritePosts"`：这是URL路径模式，其中的`{userId}`是一个路径变量，可以在请求的URL中动态替换。比如，你可以发送一个请求到`/users/123/favoritePosts`，这个请求会被映射到这个方法，同时`{userId}`会被替换为`123`。
+
+所以，`@GetMapping("/users/{userId}/favoritePosts")`的意思是，当你发送一个GET请求到`/users/{userId}/favoritePosts`这样的URL时（例如`/users/123/favoritePosts`），该请求将被映射到该方法。
+
+在方法的参数列表中，你可以使用`@PathVariable Long userId`来获取路径变量`{userId}`的值。`@PathVariable`是Spring MVC的一个注解，表示该参数的值将从URL的路径中获取。
+
+所以，这个注解定义的方法将处理这样的请求：获取指定用户ID的用户的所有收藏的帖子。当这个请求到达时，`userId`参数将被自动赋值为路径中的用户ID。
+
+
+在这段代码中，`@RequestBody FavoritePost favoritePost` 表示该方法的 `favoritePost` 参数的值将从 HTTP 请求的 body 中获取。`@RequestBody` 是 Spring MVC 的一个注解，它用于将请求的 body 映射到方法的参数。
+
+当你发送一个 POST 请求到 `/favorite` 这个 URL，并在请求的 body 中包含了一个 `FavoritePost` 对象（通常是 JSON 格式）时，Spring MVC 会自动将请求的 body 解析为 `FavoritePost` 对象，然后将这个对象作为参数传给这个方法。
+
+`@Valid` 是一个 JSR-303 注解，它用于在方法被调用前对方法的参数进行验证。具体的验证规则是通过在 `FavoritePost` 类中的字段上添加注解来定义的。
+
+所以，这个方法的作用是，当你发送一个包含了 `FavoritePost` 对象的 POST 请求到 `/favorite` 时，该方法将被调用，并将请求的 body 解析为 `FavoritePost` 对象，然后添加这个收藏的帖子。
+
+---
+
+
+
 1. 注册新用户。
+
+   你的原有代码已经实现了用户注册的基本功能：接收用户提交的信息并保存到数据库中。但是，这里还有一些重要的功能需要添加：
+
+   1. **密码加密**：在保存用户信息到数据库之前，你应该先将用户的密码加密。这是一个很重要的安全措施，因为这样即使你的数据库被盗，攻击者也无法直接获取到用户的密码。你可以使用Spring Security提供的`BCryptPasswordEncoder`类来进行密码加密。
+
+   2. **输入验证**：你应该在接收到用户提交的信息之后，首先进行输入验证。例如，你可以检查用户名是否已经被使用，密码是否符合复杂性要求，邮箱地址是否有效等等。你可以使用Spring的`@Valid`注解和Java的Bean Validation API来进行输入验证。、
+
+      `@Valid` 注解可以用来在HTTP请求处理方法中开启对请求体（`@RequestBody`）对象的数据校验。
+
+      在你的控制器类中，你可以在处理请求的方法参数前添加 `@Valid` 注解，示例如下：
+
+      ```
+      @PostMapping("/favorite")
+      public FavoritePost addFavoritePost(@Valid @RequestBody FavoritePost favoritePost) {
+          return favoritePostService.addFavoritePost(favoritePost);
+      }
+      
+      @PostMapping("/share")
+      public SharedPost addSharedPost(@Valid @RequestBody SharedPost sharedPost) {
+          return sharedPostService.addSharedPost(sharedPost);
+      }
+      
+      @PostMapping("/like")
+      public LikedPost addLikedPost(@Valid @RequestBody LikedPost likedPost) {
+          return likedPostService.addLikedPost(likedPost);
+      }
+      ```
+
+      然后，你可以在你的实体类中（例如 `FavoritePost`、`SharedPost` 和 `LikedPost`）使用JSR 380（Bean Validation 2.0）提供的各种约束注解，如 `@NotNull`、`@Size`、`@Min`、`@Max` 等，来对属性进行约束。
+
+      例如，如果你想确保 `FavoritePost` 的 `userId` 和 `postId` 属性都不为空，你可以这样做：
+
+      ```
+      public class FavoritePost {
+          @NotNull
+          private Long userId;
+          
+          @NotNull
+          private Long postId;
+          
+          // 其他属性和方法
+      }
+      ```
+
+      然后，当你调用 `addFavoritePost(@Valid @RequestBody FavoritePost favoritePost)` 方法时，如果请求体中的 `userId` 或 `postId` 为 `null`，就会抛出一个 `MethodArgumentNotValidException` 异常，你可以通过全局异常处理或者控制器内的异常处理方法来处理这个异常。
+
+   3. **错误处理**：如果在用户注册过程中发生错误（例如用户名已经被使用，输入验证失败等），你应该返回一个包含错误信息的HTTP响应。你可以使用Spring的`ResponseEntity`类来创建这样的响应
+
+---
+
+
+
 2. 用户可以收藏、分享和点赞帖子。
+
+   **实现要改四个地方 TableClass  ControllerClass ServiceClass Repository**
+
+为了实现"用户可以收藏、分享和点赞帖子"的功能，你需要在相应的服务类（FavoritePostService, SharedPostService 和 LikedPostService）中添加相应的方法，并在对应的控制器类中添加API接口。
+
+（注：在相应的API中的Controller中的@PostMapping中加入了对应的标识）
+
+​	其次我们应该拥有错误处理
+
+然后分享是可以多次的 点赞只能一次 收藏只能一次
+
+
+
+
+
+---
+
+
+
 3. 用户可以查看他/她收藏、分享和点赞的帖子。
+
+
+
+为了实现这个功能，你需要在相应的Service类和Controller类中添加新的方法。具体来说：
+
+**Service类**：
+
+在FavoritePostService，SharedPostService，和LikedPostService中，你需要添加一个方法来获取用户收藏、分享和点赞的帖子。这个方法可能需要调用你的Repository类的查询方法，根据用户ID找到相应的收藏、分享和点赞的帖子。例如，在FavoritePostService中，你可以添加这样的一个方法：
+
+```
+public List<FavoritePost> getFavoritePostsByUserId(Long userId) {
+    return favoritePostRepository.findByUserId(userId);
+}
+```
+
+类似地，在SharedPostService和LikedPostService中，你也需要添加类似的方法。
+
+**Controller类**：
+
+在FavoritePostController，SharedPostController，和LikedPostController中，你需要添加一个新的API端点，用于处理用户请求查看他/她收藏、分享和点赞的帖子。这个API端点需要调用相应的Service类的方法，获取数据，并将数据返回给用户。例如，在FavoritePostController中，你可以添加这样的一个API端点：
+
+```
+@GetMapping("/users/{userId}/favoritePosts")
+public ResponseEntity<List<FavoritePost>> getFavoritePostsByUserId(@PathVariable Long userId) {
+    List<FavoritePost> favoritePosts = favoritePostService.getFavoritePostsByUserId(userId);
+    return ResponseEntity.ok(favoritePosts);
+}
+```
+
+类似地，在SharedPostController和LikedPostController中，你也需要添加类似的API端点。
+
+注意：这里的代码假设你的Repository类有一个`findByUserId`方法，用于根据用户ID查找相应的收藏、分享和点赞的帖子。如果你的Repository类没有这个方法，你需要添加它。这个方法可能需要使用Spring Data JPA的查询方法，或者你自己定义的SQL查询。
+
+
+
+但是还有一点要注意的就是 返回的值是空的时候要注意
+
+
+
+如果没有找到对应的帖子，你可以选择返回一个空的列表或者一个特定的消息告诉用户没有找到他们收藏、分享或者点赞的帖子。
+
+在 Service 类里，你可以这样处理：
+
+```
+public List<FavoritePost> getFavoritePostsByUserId(Long userId) {
+    return Optional.ofNullable(favoritePostRepository.findByUserId(userId))
+            .orElse(Collections.emptyList());
+}
+```
+
+在这段代码中，`Optional.ofNullable()` 方法用于处理可能为 null 的值。如果 `favoritePostRepository.findByUserId(userId)` 返回 null，那么 `orElse()` 方法将会返回一个空的列表。
+
+在 Controller 类里，你需要返回 HTTP 状态码来告知用户请求的处理结果。如果列表为空，你可以选择返回 HTTP 200 状态码和一个空列表，或者返回一个特定的消息告诉用户没有找到他们收藏、分享或者点赞的帖子。例如：
+
+```
+@GetMapping("/users/{userId}/favoritePosts")
+public ResponseEntity<?> getFavoritePostsByUserId(@PathVariable Long userId) {
+    List<FavoritePost> favoritePosts = favoritePostService.getFavoritePostsByUserId(userId);
+    if (favoritePosts.isEmpty()) {
+        return ResponseEntity.status(HttpStatus.OK).body("No favorite posts found for user with ID: " + userId);
+    } else {
+        return ResponseEntity.ok(favoritePosts);
+    }
+}
+```
+
+在这段代码中，如果 `favoritePosts` 列表为空，那么我们返回一个 HTTP 200 状态码和一个消息告知用户没有找到他们的收藏帖子。否则，我们返回 HTTP 200 状态码和收藏帖子的列表。
+
+对于 SharedPostController 和 LikedPostController，你可以用同样的方式处理。
+
+
+
+
+
+---
+
 4. 用户可以关注或取消关注其他用户，还可以查看他/她已关注的用户列表。
+
+这个功能涉及到 `FollowedAuthor` 的 `Service` 类和 `Controller` 类。
+
+首先，你需要在 `FollowedAuthorService` 类中添加以下方法：
+
+1. `followAuthor`: 当一个用户想要关注另一个用户时，这个方法会被调用。它接受一个 `FollowedAuthor` 对象作为参数，并将其保存到数据库中。
+2. `unfollowAuthor`: 当一个用户想要取消关注另一个用户时，这个方法会被调用。它接受一个 `FollowedAuthorsId` 对象作为参数，并从数据库中删除对应的记录。
+3. `findFollowedByAuthor`: 这个方法会返回一个用户关注的所有用户的列表。它接受一个 `Author` 对象作为参数，然后从数据库中找到所有由这个 `Author` 关注的 `FollowedAuthor` 对象。
+
+然后，在 `FollowedAuthorController` 类中，你需要添加以下API端点：
+
+1. `POST /followedAuthor`: 这个端点接受一个 `FollowedAuthor` 对象，并调用 `followAuthor` 方法将其保存到数据库中。
+2. `DELETE /followedAuthor`: 这个端点接受一个 `FollowedAuthorsId` 对象，并调用 `unfollowAuthor` 方法从数据库中删除对应的记录。
+3. `GET /followedAuthor/{authorId}`: 这个端点接受一个 `Author` 的 `id`，并调用 `findFollowedByAuthor` 方法来返回这个 `Author` 关注的所有用户的列表。
+
+这就是实现 "用户可以关注或取消关注其他用户，还可以查看他/她已关注的用户列表" 这个功能的大体步骤。这个过程可能需要根据你的具体需求进行一些调整，比如你可能需要添加一些错误处理的逻辑，或者在保存和删除 `FollowedAuthor` 对象前进行一些权限检查。
+
+
+
+
+
+注：这里我这几个类可能暂时实现没有实现完全同步
+
+---
+
+
+
 5. 用户可以创建帖子。
+
+
+在你的服务层（Service layer）和控制层（Controller layer）中，你需要添加新的方法来实现用户创建帖子的功能。
+
+**服务层（Service layer）**
+
+首先，在你的PostService类中，你已经有了一个方法 `createPost` 用于保存新的帖子。这个方法将会被我们在控制层调用。
+
+```
+public Post createPost(Post post) {
+    return postRepository.save(post);
+}
+```
+
+**控制层（Controller layer）**
+
+然后，在PostController类中，你需要添加一个新的方法来处理HTTP POST请求，以创建新的帖子。这个方法将会接受一个Post对象作为请求体（request body），然后调用`createPost`方法来保存新的帖子。之后，它将返回一个HTTP响应，表示帖子是否已经成功创建。
+
+这个方法可能会像下面这样：
+
+```
+@PostMapping("/posts")
+public ResponseEntity<Post> createPost(@RequestBody Post post) {
+    try {
+        Post _post = postService.createPost(post);
+        return new ResponseEntity<>(_post, HttpStatus.CREATED);
+    } catch (Exception e) {
+        return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+}
+```
+
+注意，这只是一个基本的实现，你可能需要根据你的具体需求来修改这些方法。例如，你可能需要验证请求中的数据，处理可能出现的错误，或者添加权限控制来限制谁可以创建帖子。
+
+
+
+
+
+---
+
+
+
 6. 用户可以回复帖子或回复回复。
+
+实现用户回复帖子或回复回复的功能涉及到`Reply`和`SecondaryReply`这两个实体。首先，我们需要明确用户回复帖子或回复回复的业务逻辑。
+
+1. **用户回复帖子**：当用户回复帖子时，我们需要创建一个新的`Reply`实体，这个实体需要包含用户ID，帖子ID，以及回复内容。这个过程会涉及到`ReplyService`中的新方法（例如，`addReply`），该方法需要接受一个新的`Reply`实体，并将其保存到数据库中。
+2. **用户回复回复**：当用户回复另一个回复时，我们需要创建一个新的`SecondaryReply`实体。这个实体需要包含用户ID，原始回复ID，以及回复内容。这个过程会涉及到`SecondaryReplyService`中的新方法（例如，`addSecondaryReply`），该方法需要接受一个新的`SecondaryReply`实体，并将其保存到数据库中。
+
+在控制器层面，你需要为这两个操作创建新的API端点。例如，在`ReplyController`中，你可能需要添加一个POST请求的API端点（例如，`/replies`），用于接收客户端的新回复请求。在`SecondaryReplyController`中，你可能需要添加一个类似的API端点（例如，`/secondaryreplies`），用于接收客户端的新回复请求。
+
+在处理这些请求时，你需要从请求体中提取出必要的信息（例如，用户ID，帖子ID或回复ID，以及回复内容），然后使用这些信息来创建新的`Reply`或`SecondaryReply`实体，并调用相应的服务类方法将这些实体保存到数据库中。
+
+
+
+
+
+好像没有什么报错可以考虑的？
+
+
+
+一个基本的实现，它假设客户端会发送一个包含所有必要信息的请求体，服务端会将这些信息直接保存到数据库中。在实际的应用中，你可能需要对这个过程进行更多的控制和验证，例如，检查用户的身份，确保他们有权限执行这个操作，检查帖子和回复的存在性等。
+
+
+
 7. 用户可以查看他/她自己的帖子和回复。
 
+好的，以下是对应的服务类和控制器类的更新代码：
 
+首先，我们在`AuthorService`类中添加两个新的方法：
+
+```
+javaCopy code@Service
+public class AuthorService {
+    // ...existing fields and methods...
+
+    public List<Post> findPostsByAuthor(Author author) {
+        return postRepository.findByAuthor(author);
+    }
+
+    public List<Reply> findRepliesByAuthor(Author author) {
+        return replyRepository.findByAuthor(author);
+    }
+
+    public List<SecondaryReply> findSecondaryRepliesByAuthor(Author author) {
+        return secondaryReplyRepository.findByAuthor(author);
+    }
+}
+```
+
+然后，我们在`AuthorController`类中添加两个新的API接口：
+
+```
+javaCopy code@RestController
+@RequestMapping("/api/authors")
+public class AuthorController {
+    // ...existing fields and methods...
+
+    @GetMapping("/{id}/posts")
+    public List<Post> findPostsByAuthor(@PathVariable Long id) {
+        Author author = authorService.findById(id);
+        return authorService.findPostsByAuthor(author);
+    }
+
+    @GetMapping("/{id}/replies")
+    public List<Reply> findRepliesByAuthor(@PathVariable Long id) {
+        Author author = authorService.findById(id);
+        return authorService.findRepliesByAuthor(author);
+    }
+
+    @GetMapping("/{id}/secondaryReplies")
+    public List<SecondaryReply> findSecondaryRepliesByAuthor(@PathVariable Long id) {
+        Author author = authorService.findById(id);
+        return authorService.findSecondaryRepliesByAuthor(author);
+    }
+}
+```
+
+这样，通过URL `/api/authors/{id}/posts`、`/api/authors/{id}/replies` 和 `/api/authors/{id}/secondaryReplies`，我们就可以分别获取到指定作者的帖子、回复和二级回复。
+
+以上代码中，我们假设`PostRepository`、`ReplyRepository` 和 `SecondaryReplyRepository` 类已经实现了 `findByAuthor(Author author)` 方法，这些方法用于获取指定作者的帖子、回复和二级回复。如果还没有实现，可以在对应的接口中添加这些方法：
+
+```
+javaCopy codepublic interface PostRepository extends JpaRepository<Post, Long> {
+    List<Post> findByAuthor(Author author);
+}
+
+public interface ReplyRepository extends JpaRepository<Reply, Long> {
+    List<Reply> findByAuthor(Author author);
+}
+
+public interface SecondaryReplyRepository extends JpaRepository<SecondaryReply, Long> {
+    List<SecondaryReply> findByAuthor(Author author);
+}
+```
+
+以上代码中，我们使用了Spring Data JPA的查询方法命名规则自动生成查询，`findByAuthor` 方法会根据传入的 `Author` 对象查询出所有相关的帖子、回复或二级回复。
+
+这些代码只是一个基础的示例，你可能需要根据实际的业务需求和数据库模型进行相应的调整和扩展。
+
+
+
+
+
+
+
+还有一些高级功能： - 匿名回复 - 支持图片和视频播放（需要页面显示） - 屏蔽或拉黑功能 - 热门搜索列表功能 - 多参数搜索功能。任何参数可以为空或非空。例如：按时间段、关键词和类型搜索帖子。
+
+
+
+
+
+为了实现这些功能，你需要在你的服务类和控制器类中添加新的方法。下面是一个概览：
+
+**服务类**：
+
+1. 在AuthorService中，添加一个方法来创建新的Author（注册新用户）。
+2. 在FavoritePostService, SharedPostService 和 LikedPostService中，添加方法来处理用户收藏、分享、和点赞帖子的操作。
+3. 在同样的服务类中，添加方法来查找用户收藏、分享、和点赞的帖子。
+4. 在FollowedAuthorService中，添加方法来处理用户关注和取消关注其他用户的操作，以及查找用户关注的其他用户的列表。
+5. 在PostService中，添加一个方法来创建新的Post。
+6. 在ReplyService 和 SecondaryReplyService中，添加方法来创建新的Reply和SecondaryReply。
+7. 在AuthorService, PostService, ReplyService 和 SecondaryReplyService中，添加方法来查找用户的帖子和回复。
+
+**控制器类**：
+
+1. 在AuthorController中，添加一个API端点来处理用户注册的请求。
+2. 在FavoritePostController, SharedPostController, 和 LikedPostController中，添加API端点来处理用户收藏、分享、和点赞帖子的请求。
+3. 在同样的控制器中，添加API端点来返回用户收藏、分享、和点赞的帖子。
+4. 在FollowedAuthorController中，添加API端点来处理用户关注和取消关注其他用户的请求，以及返回用户关注的其他用户的列表。
+5. 在PostController中，添加一个API端点来处理用户创建帖子的请求。
+6. 在ReplyController 和 SecondaryReplyController中，添加API端点来处理用户创建回复的请求。
+7. 在AuthorController, PostController, ReplyController, 和 SecondaryReplyController中，添加API端点来返回用户的帖子和回复。
+
+对于更高级的功能，如匿名回复，支持图片和视频播放，屏蔽或拉黑功能，热门搜索列表功能，和多参数搜索功能，你可能需要进行更深入的设计和实现。例如，你可能需要修改你的实体类和数据库模式，添加新的服务类和控制器方法，甚至可能需要使用更复杂的技术，如全文搜索引擎。
 
 ---
 
