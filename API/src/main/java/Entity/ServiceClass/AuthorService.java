@@ -1,7 +1,7 @@
 package Entity.ServiceClass;
 
+import Entity.EntityClass.Author;
 import Entity.Repository.AuthorRepository;
-import Entity.EntityClass.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

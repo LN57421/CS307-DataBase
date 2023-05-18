@@ -1,6 +1,6 @@
 package Entity.ServiceClass;
 
-import Entity.EntityClass.*;
+import Entity.EntityClass.Category;
 import Entity.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

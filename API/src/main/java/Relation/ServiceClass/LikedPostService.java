@@ -1,7 +1,7 @@
 package Relation.ServiceClass;
 
-import Relation.EmbededClass.LikedPostsId;
 import Relation.RelationClass.LikedPost;
+import Relation.EmbededClass.LikedPostsId;
 import Relation.Repository.LikedPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

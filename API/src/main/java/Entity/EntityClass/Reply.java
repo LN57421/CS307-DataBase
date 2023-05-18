@@ -1,8 +1,5 @@
 package Entity.EntityClass;
 
-import Entity.EntityClass.Author;
-import Entity.EntityClass.Post;
-
 import javax.persistence.*;
 
 @Entity

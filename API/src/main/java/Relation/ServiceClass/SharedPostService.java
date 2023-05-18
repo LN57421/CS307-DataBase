@@ -1,7 +1,7 @@
 package Relation.ServiceClass;
 
-import Relation.EmbededClass.SharedPostsId;
 import Relation.RelationClass.SharedPost;
+import Relation.EmbededClass.SharedPostsId;
 import Relation.Repository.SharedPostsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

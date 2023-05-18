@@ -1,7 +1,7 @@
 package Relation.ServiceClass;
 
-import Relation.EmbededClass.PostCategoriesId;
 import Relation.RelationClass.PostCategory;
+import Relation.EmbededClass.PostCategoriesId;
 import Relation.Repository.PostCategoriesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

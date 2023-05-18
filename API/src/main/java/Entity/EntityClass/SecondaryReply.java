@@ -1,8 +1,5 @@
 package Entity.EntityClass;
 
-import Entity.EntityClass.Author;
-import Entity.EntityClass.Reply;
-
 import javax.persistence.*;
 
 @Entity

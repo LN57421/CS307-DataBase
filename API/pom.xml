@@ -49,10 +49,10 @@
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <!--  用于添加安全性和权限管理功能 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-security</artifactId>-->
+<!--        </dependency>-->
         <!--  用于实现缓存功能。 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

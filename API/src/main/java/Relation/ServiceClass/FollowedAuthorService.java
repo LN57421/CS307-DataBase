@@ -1,8 +1,8 @@
 package Relation.ServiceClass;
 
 
-import Relation.EmbededClass.FollowedAuthorsId;
 import Relation.RelationClass.FollowedAuthor;
+import Relation.EmbededClass.FollowedAuthorsId;
 import Relation.Repository.FollowedAuthorsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
