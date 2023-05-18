@@ -5,8 +5,18 @@ import java.sql.Timestamp;
 public class Author {
     private String authorId;
     private String authorName;
+
+    private String authorKey;
     private Timestamp registrationTime;
-    private Long phone;
+    private String phone;
+
+    public Author(String authorId, String authorName, String authorKey, Timestamp registrationTime, String phone) {
+        this.authorId = authorId;
+        this.authorName = authorName;
+        this.registrationTime = registrationTime;
+        this.phone = phone;
+        this.authorKey = authorKey;
+    }
 
     public String getAuthorId() {
         return authorId;
@@ -32,11 +42,11 @@ public class Author {
         this.registrationTime = registrationTime;
     }
 
-    public Long getPhone() {
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(Long phone) {
+    public void setPhone(String phone) {
         this.phone = phone;
     }
 
@@ -48,5 +58,13 @@ public class Author {
                 ", registrationTime=" + registrationTime +
                 ", phone=" + phone +
                 '}';
+    }
+
+    public String getAuthorKey() {
+        return authorKey;
+    }
+
+    public void setAuthorKey(String authorKey) {
+        this.authorKey = authorKey;
     }
 }

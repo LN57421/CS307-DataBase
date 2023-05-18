@@ -10,11 +10,17 @@ import java.util.List;
 @Mapper
 public interface AuthorsMapper {
 
+    @Select("select * from authors where author_name = #{authorName}")
+    Author findByName(String authorName);
+
+    @Select("select * from authors where author_id = #{authorId}")
+    Author findByID(String authorId);
+
     @Select("select * from authors")
     List<Author> findAll();
 
-    @Insert("insert into authors(authorId, authorName, password, registrationTime, phone) " +
-            "values(#{authorId}, #{authorName}, #{password},  #{registrationTime},  #{phone})")
+    @Insert("insert into authors(author_id, author_name, author_key, registration_time, phone) " +
+            "values(#{authorId}, #{authorName},  #{authorKey}, #{registrationTime},  #{phone})")
     int insertAuthor(Author author);
 
 
