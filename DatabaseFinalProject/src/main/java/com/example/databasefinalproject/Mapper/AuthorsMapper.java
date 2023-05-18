@@ -1,6 +1,6 @@
 package com.example.databasefinalproject.Mapper;
 
-import com.example.databasefinalproject.Entity.Authors;
+import com.example.databasefinalproject.Entity.Author;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -10,5 +10,7 @@ import java.util.List;
 public interface AuthorsMapper {
 
     @Select("select * from authors")
-    List<Authors> findAll();
+    List<Author> findAll();
+
+
 }

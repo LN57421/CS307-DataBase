@@ -1,6 +1,6 @@
 package com.example.databasefinalproject.Controller;
 
-import com.example.databasefinalproject.Entity.Authors;
+import com.example.databasefinalproject.Entity.Author;
 import com.example.databasefinalproject.Mapper.AuthorsMapper;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +18,8 @@ public class AuthorsRestController {
     private AuthorsMapper authorsMapper;
 
     @ApiOperation("获取所有authors")
-    @GetMapping
-    public List<Authors> getAllAuthors(){
+    @GetMapping("name")
+    public List<Author> getAllAuthors(){
         return authorsMapper.findAll();
     }
 

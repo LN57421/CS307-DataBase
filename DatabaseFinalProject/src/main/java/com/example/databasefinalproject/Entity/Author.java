@@ -2,7 +2,7 @@ package com.example.databasefinalproject.Entity;
 
 import java.sql.Timestamp;
 
-public class Authors {
+public class Author {
     private String authorId;
     private String authorName;
     private Timestamp registrationTime;
