@@ -16,7 +16,7 @@ public class LikedPostController {
     private LikedPostMapper likedPostMapper;
 
     @PostMapping("create/{postName}")
-    public ResponseEntity<Void> createRelation(String authorId, String postName) {
+    public ResponseEntity<Void> createRelation(@PathVariable String authorId, @PathVariable String postName) {
         if (likedPostMapper.findLikedPostsByAuthorIdAndPostName(authorId, postName) != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -28,7 +28,7 @@ public class LikedPostController {
     }
 
     @DeleteMapping("/delete/{postName}")
-    public ResponseEntity<Void> deleteLikedPostRelation(String authorId, String postName) {
+    public ResponseEntity<Void> deleteLikedPostRelation(@PathVariable String authorId,@PathVariable String postName) {
         if (likedPostMapper.findLikedPostsByAuthorIdAndPostName(authorId, postName) == null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -40,7 +40,7 @@ public class LikedPostController {
     }
 
     @GetMapping("/showAll")
-    public ResponseEntity<List<LikedPost>> findLikedPostsByAuthorId(String authorId) {
+    public ResponseEntity<List<LikedPost>> findLikedPostsByAuthorId(@PathVariable String authorId) {
         List<LikedPost> likedPosts = likedPostMapper.findLikedPostsByAuthorId(authorId);
         if (likedPosts.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -49,8 +49,8 @@ public class LikedPostController {
         }
     }
 
-    @DeleteMapping("/showOne")
-    public ResponseEntity<List<LikedPost>> findLikedPostsByAuthorIdAndPostName(String authorId, String postName){
+    @DeleteMapping("/showOne/{postName}")
+    public ResponseEntity<List<LikedPost>> findLikedPostsByAuthorIdAndPostName(@PathVariable String authorId,@PathVariable String postName){
         List<LikedPost> likedPosts = likedPostMapper.findLikedPostsByAuthorIdAndPostName(authorId,postName);
         if (likedPosts.isEmpty()) {
             return ResponseEntity.notFound().build(); // 返回404 Not Found
