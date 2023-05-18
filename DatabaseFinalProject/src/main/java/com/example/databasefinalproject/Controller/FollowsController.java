@@ -20,7 +20,7 @@ public class FollowsController {
 
     @ApiOperation("当前用户关注某个用户")
     @PostMapping("create/{follower_author_id}")
-    public ResponseEntity<Void> createRelation(String author_id, String follower_author_id) {
+    public ResponseEntity<Void> createRelation(@PathVariable String author_id, @PathVariable String follower_author_id) {
         if (followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id) != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -33,7 +33,7 @@ public class FollowsController {
 
     @ApiOperation("当前用户不再关注某个用户")
     @DeleteMapping("/delete/{follower_author_id}")
-    public ResponseEntity<Void> deleteFollowRelation(String author_id, String follower_author_id) {
+    public ResponseEntity<Void> deleteFollowRelation(@PathVariable String author_id, @PathVariable String follower_author_id) {
         if (followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id) == null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -46,7 +46,7 @@ public class FollowsController {
 
     @ApiOperation("查看当前用户的所有关注")
     @GetMapping("/showAll")
-    public ResponseEntity<List<FollowedAuthor>> findFollowedByAuthorId(String author_id) {
+    public ResponseEntity<List<FollowedAuthor>> findFollowedByAuthorId(@PathVariable String author_id) {
         List<FollowedAuthor> followedUsers = followsMapper.findFollowedByAuthorId(author_id);
         if (followedUsers.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -57,7 +57,7 @@ public class FollowsController {
 
     @ApiOperation("查看当前用户是否有某个特定关注")
     @GetMapping("/showOne/{follower_author_id}")
-    public ResponseEntity<List<FollowedAuthor>> findFollowedByAuthorIdAndFollowerId(String author_id, String follower_author_id) {
+    public ResponseEntity<List<FollowedAuthor>> findFollowedByAuthorIdAndFollowerId(@PathVariable String author_id, @PathVariable String follower_author_id) {
         List<FollowedAuthor> followRelations = followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id);
         if (followRelations.isEmpty()) {
             return ResponseEntity.notFound().build();

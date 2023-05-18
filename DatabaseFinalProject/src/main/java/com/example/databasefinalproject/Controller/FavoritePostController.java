@@ -19,7 +19,7 @@ public class FavoritePostController {
 
     @ApiOperation("author收藏了某个帖子")
     @PostMapping("create/{postName}")
-    public ResponseEntity<Void> createRelation(String authorId, String postName) {
+    public ResponseEntity<Void> createRelation(@PathVariable String authorId, @PathVariable String postName) {
         if (favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(authorId, postName) != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);// 409 已经收藏
         }
@@ -32,7 +32,7 @@ public class FavoritePostController {
 
     @ApiOperation("author不收藏某个帖子")
     @DeleteMapping("/delete/{postName}")
-    public ResponseEntity<Void> deleteFavoritePostRelation(String authorId, String postName) {
+    public ResponseEntity<Void> deleteFavoritePostRelation(@PathVariable String authorId,@PathVariable String postName) {
         if (favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(authorId, postName) == null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);// 409 已经删除
         }
@@ -45,7 +45,7 @@ public class FavoritePostController {
 
     @ApiOperation("author收藏的所有帖子")
     @GetMapping("/showAll")
-    public ResponseEntity<List<FavoritePost>> findFavoritePostsByAuthorId(String authorId) {
+    public ResponseEntity<List<FavoritePost>> findFavoritePostsByAuthorId(@PathVariable String authorId) {
         List<FavoritePost> favoritePosts = favoritePostMapper.findFavoritePostsByAuthorId(authorId);
         if (favoritePosts.isEmpty()) {
             return ResponseEntity.notFound().build(); // 返回404 Not Found
@@ -55,8 +55,8 @@ public class FavoritePostController {
     }
 
     @ApiOperation("查找author有没有收藏某个帖子")
-    @DeleteMapping("/showOne")
-    public ResponseEntity<List<FavoritePost>> findFavoritePostsByAuthorIdAndPostName(String authorId, String postName){
+    @DeleteMapping("/show/{postName}")
+    public ResponseEntity<List<FavoritePost>> findFavoritePostsByAuthorIdAndPostName(@PathVariable String authorId,@PathVariable String postName){
         List<FavoritePost> favoritePosts = favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(authorId,postName);
         if (favoritePosts.isEmpty()) {
             return ResponseEntity.notFound().build(); // 返回404 Not Found

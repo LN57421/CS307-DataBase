@@ -17,7 +17,7 @@ public class SharedPostController {
     private SharedPostMapper sharedPostMapper;
 
     @PostMapping("create/{postName}")
-    public ResponseEntity<Void> createRelation(String authorId, String postName) {
+    public ResponseEntity<Void> createRelation(@PathVariable String authorId, @PathVariable String postName) {
         if (sharedPostMapper.findRelationByAuthorIdAndPostId(authorId, postName) != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -29,7 +29,7 @@ public class SharedPostController {
     }
 
     @DeleteMapping("/delete/{postName}")
-    public ResponseEntity<Void> deleteSharedPostRelation(String authorId, String postName) {
+    public ResponseEntity<Void> deleteSharedPostRelation(@PathVariable String authorId,@PathVariable String postName) {
         if (sharedPostMapper.findRelationByAuthorIdAndPostId(authorId, postName) == null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -41,7 +41,7 @@ public class SharedPostController {
     }
 
     @GetMapping("/showAll")
-    public ResponseEntity<List<SharedPost>> findSharedPostsByAuthorId(String authorId) {
+    public ResponseEntity<List<SharedPost>> findSharedPostsByAuthorId(@PathVariable String authorId) {
         List<SharedPost> sharedPosts = sharedPostMapper.findSharedPostsByAuthorId(authorId);
         if (sharedPosts.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -50,8 +50,8 @@ public class SharedPostController {
         }
     }
 
-    @DeleteMapping("/showOne")
-    public ResponseEntity<List<SharedPost>> findLikedPostsByAuthorIdAndPostName(String authorId, String postName){
+    @DeleteMapping("/showOne/{postName}")
+    public ResponseEntity<List<SharedPost>> findLikedPostsByAuthorIdAndPostName(@PathVariable String authorId, @PathVariable String postName){
         List<SharedPost> sharedPosts = sharedPostMapper.findRelationByAuthorIdAndPostId(authorId,postName);
         if (sharedPosts.isEmpty()) {
             return ResponseEntity.notFound().build();
