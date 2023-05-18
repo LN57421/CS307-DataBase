@@ -1,9 +1,6 @@
 package com.example.databasefinalproject.Entity;
 
-
-
 public class FavoritePost {
-
     private Integer postId;
 
     private String favoriteAuthorId;
