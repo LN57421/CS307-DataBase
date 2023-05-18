@@ -1,24 +1,21 @@
 package com.example.databasefinalproject.Mapper;
 
 import com.example.databasefinalproject.Entity.FollowedAuthor;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
 @Mapper
 public interface FollowsMapper {
-    @Select("select * from followed_authors where author_id = #{author_id} and follower_author_id = #{follower_author_id}")
-    List<FollowedAuthor> findFollowedByAuthorIdAndFollowerId(String author_id, String follower_author_id);
+    @Select("SELECT * FROM followed_authors WHERE author_id = #{authorId} AND follower_author_id = #{followerAuthorId}")
+    List<FollowedAuthor> findFollowedByAuthorIdAndFollowerId(@Param("authorId") String authorId, @Param("followerAuthorId") String followerAuthorId);
 
-    @Insert("insert into followed_authors(author_id, follower_author_id) values(#{author_id}, #{follower_author_id})")
-    int createRelation(String author_id, String follower_author_id);
+    @Insert("INSERT INTO followed_authors (author_id, follower_author_id) VALUES (#{authorId}, #{followerAuthorId})")
+    int createRelation(@Param("authorId") String authorId, @Param("followerAuthorId") String followerAuthorId);
 
-    @Delete("delete from followed_authors where author_id = #{author_id} and follower_author_id = #{follower_author_id}")
-    int deleteRelation(String author_id, String follower_author_id);
+    @Delete("DELETE FROM followed_authors WHERE author_id = #{authorId} AND follower_author_id = #{followerAuthorId}")
+    int deleteRelation(@Param("authorId") String authorId, @Param("followerAuthorId") String followerAuthorId);
 
-    @Select("select * from followed_authors where author_id = #{author_id}")
-    List<FollowedAuthor> findFollowedByAuthorId(String author_id);
+    @Select("SELECT * FROM followed_authors WHERE author_id = #{authorId}")
+    List<FollowedAuthor> findFollowedByAuthorId(@Param("authorId") String authorId);
 }

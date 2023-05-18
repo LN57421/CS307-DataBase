@@ -7,15 +7,16 @@ import java.util.List;
 
 @Mapper
 public interface SecondaryRepliesMapper {
-    @Insert("insert into secondary_replies(secondary_reply_id, content, stars, author_id, reply_id) values(#{secondaryReplyId}, #{content}, #{stars}, #{authorId}, #{replyId})")
-    int createSecondaryReply(int secondaryReplyId, int content, String stars, String authorId, int replyId);
+    @Insert("INSERT INTO secondary_replies (secondary_reply_id, content, stars, author_id, reply_id) VALUES (#{secondaryReplyId}, #{content}, #{stars}, #{authorId}, #{replyId})")
+    int createSecondaryReply(@Param("secondaryReplyId") int secondaryReplyId, @Param("content") int content, @Param("stars") String stars, @Param("authorId") String authorId, @Param("replyId") int replyId);
 
-    @Select("select * from secondary_replies where author_id = #{authorId} and secondary_reply_id = #{secondaryReplyId}")
-    List<SecondaryReply> findSecondaryReplyByAuthorIdAndSecondaryReplyId(String authorId, int secondaryReplyId);
+    @Select("SELECT * FROM secondary_replies WHERE author_id = #{authorId} AND secondary_reply_id = #{secondaryReplyId}")
+    List<SecondaryReply> findSecondaryReplyByAuthorIdAndSecondaryReplyId(@Param("authorId") String authorId, @Param("secondaryReplyId") int secondaryReplyId);
 
-    @Select("select * from secondary_replies where author_id = #{authorId}")
-    List<SecondaryReply> findSecondaryRepliesByAuthorId(String authorId);
+    @Select("SELECT * FROM secondary_replies WHERE author_id = #{authorId}")
+    List<SecondaryReply> findSecondaryRepliesByAuthorId(@Param("authorId") String authorId);
 
-    @Delete("delete from secondary_replies where author_id = #{authorId} and secondary_reply_id = #{secondaryReplyId}")
-    int deleteSecondaryReply(String authorId, int secondaryReplyId);
+    @Delete("DELETE FROM secondary_replies WHERE author_id = #{authorId} AND secondary_reply_id = #{secondaryReplyId}")
+    int deleteSecondaryReply(@Param("authorId") String authorId, @Param("secondaryReplyId") int secondaryReplyId);
+
 }

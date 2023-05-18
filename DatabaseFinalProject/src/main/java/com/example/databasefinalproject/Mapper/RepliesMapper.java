@@ -7,18 +7,16 @@ import java.util.List;
 
 @Mapper
 public interface RepliesMapper {
-    @Insert("insert into replies(reply_id, content, stars, author_id, post_id) values(#{replyId}, #{content}, #{stars}, #{authorId}, #{postId})")
-    int createReply(int replyId, int content, String stars, String authorId, String postId);
+    @Insert("INSERT INTO replies (reply_id, content, stars, author_id, post_id) VALUES (#{replyId}, #{content}, #{stars}, #{authorId}, #{postId})")
+    int createReply(@Param("replyId") int replyId, @Param("content") int content, @Param("stars") String stars, @Param("authorId") String authorId, @Param("postId") String postId);
 
-    @Select("select * from replies where author_id = #{authorId} and reply_id = #{replyId}")
-    List<Reply> findReplyByAuthorIdAndReplyId(String authorId, int replyId);
+    @Select("SELECT * FROM replies WHERE author_id = #{authorId} AND reply_id = #{replyId}")
+    List<Reply> findReplyByAuthorIdAndReplyId(@Param("authorId") String authorId, @Param("replyId") int replyId);
 
+    @Select("SELECT * FROM replies WHERE author_id = #{authorId}")
+    List<Reply> findRepliesByAuthorId(@Param("authorId") String authorId);
 
-    @Select("select * from replies where author_id = #{authorId}")
-    List<Reply> findRepliesByAuthorId(String authorId);
-
-    @Delete("delete from replies where author_id = #{authorId} and reply_id = #{replyId}")
-    int deleteReply(String authorId, int replyId);
-
+    @Delete("DELETE FROM replies WHERE author_id = #{authorId} AND reply_id = #{replyId}")
+    int deleteReply(@Param("authorId") String authorId, @Param("replyId") int replyId);
 
 }
