@@ -6,10 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
@@ -30,9 +27,13 @@ public class AuthorsRestController {
         return authorsMapper.findAll();
     }
 
+
     @ApiOperation("创建新的author")
     @PostMapping("create")
-    public ResponseEntity<Void> createAuthors(String authorName, String authorKey, String phone){
+    public ResponseEntity<Void> createAuthors(@RequestBody Author authorNew){
+        String authorName = authorNew.getAuthorName();
+        String authorKey = authorNew.getAuthorKey();
+        String phone = authorNew.getPhone();
         if (authorsMapper.findByName(authorName) != null){
             return new ResponseEntity<>(HttpStatus.CONFLICT);// 409 已经存在用户
         }

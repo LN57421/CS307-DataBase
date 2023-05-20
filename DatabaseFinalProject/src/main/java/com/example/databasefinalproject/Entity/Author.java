@@ -18,6 +18,9 @@ public class Author {
         this.authorKey = authorKey;
     }
 
+    public Author() {
+    }
+
     public String getAuthorId() {
         return authorId;
     }

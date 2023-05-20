@@ -11,6 +11,12 @@ import java.util.List;
 public interface AuthorsMapper {
 
     @Select("select * from authors where author_name = #{authorName}")
+    Author getInfo(String authorName);
+
+    @Select("select author_key from authors where author_name = #{authorName}")
+    String verifyPassword(String authorName);
+
+    @Select("select * from authors where author_name = #{authorName}")
     Author findByName(String authorName);
 
     @Select("select * from authors where author_id = #{authorId}")

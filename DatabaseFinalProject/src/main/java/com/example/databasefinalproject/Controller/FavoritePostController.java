@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/{authorId}/favoritePosts")
-public class FavoritePostController {
+public class  FavoritePostController {
 
     @Autowired
     private FavoritePostMapper favoritePostMapper;

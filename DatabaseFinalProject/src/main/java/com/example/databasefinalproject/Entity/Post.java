@@ -7,6 +7,7 @@ public class Post {
 
     private Integer postId;
 
+    private String authorId;
 
     private Author author;
 
@@ -15,6 +16,8 @@ public class Post {
     private String content;
 
     private Timestamp postingTime;
+
+    private String postingCity;
 
     private City city;
 
@@ -44,6 +47,14 @@ public class Post {
         return city;
     }
 
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public String getPostingCity() {
+        return postingCity;
+    }
+
     public void setPostId(Integer postId) {
         this.postId = postId;
     }
@@ -66,6 +77,14 @@ public class Post {
 
     public void setCity(City city) {
         this.city = city;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public void setPostingCity(String postingCity) {
+        this.postingCity = postingCity;
     }
 }
 
