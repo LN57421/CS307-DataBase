@@ -26,4 +26,7 @@ public interface PostsMapper {
 
     @Select("select * from posts")
     List<Post> getAllPost();
+
+    @Select("select * from posts where post_id = #{postId}")
+    Post findPostByPostId(int postId);
 }

@@ -18,12 +18,12 @@ public class  FavoritePostController {
     private FavoritePostMapper favoritePostMapper;
 
     @ApiOperation("author收藏了某个帖子")
-    @PostMapping("create/{postName}")
-    public ResponseEntity<Void> createRelation(@PathVariable String authorId, @PathVariable String postName) {
-        if (favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(authorId, postName) != null){
+    @PostMapping("create/{postId}")
+    public ResponseEntity<Void> createRelation(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId) {
+        if (favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(postId, authorId).size() != 0){//不能用null
             return new ResponseEntity<>(HttpStatus.CONFLICT);// 409 已经收藏
         }
-        if (favoritePostMapper.createRelation(authorId, postName) > 0){
+        if (favoritePostMapper.createRelation(postId, authorId) > 0){
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 创建成功
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 创建失败
@@ -31,12 +31,12 @@ public class  FavoritePostController {
     }
 
     @ApiOperation("author不收藏某个帖子")
-    @DeleteMapping("/delete/{postName}")
-    public ResponseEntity<Void> deleteFavoritePostRelation(@PathVariable String authorId,@PathVariable String postName) {
-        if (favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(authorId, postName) == null){
+    @DeleteMapping("/delete/{postId}")
+    public ResponseEntity<Void> deleteFavoritePostRelation(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId) {
+        if (favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(postId, authorId).size() == 0){
             return new ResponseEntity<>(HttpStatus.CONFLICT);// 409 已经删除
         }
-        if (favoritePostMapper.deleteRelation(authorId, postName) > 0){
+        if (favoritePostMapper.deleteRelation(postId, authorId) > 0){
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 删除成功
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 删除失败
@@ -55,9 +55,9 @@ public class  FavoritePostController {
     }
 
     @ApiOperation("查找author有没有收藏某个帖子")
-    @DeleteMapping("/show/{postName}")
-    public ResponseEntity<List<FavoritePost>> findFavoritePostsByAuthorIdAndPostName(@PathVariable String authorId,@PathVariable String postName){
-        List<FavoritePost> favoritePosts = favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(authorId,postName);
+    @DeleteMapping("/show/{postId}")
+    public ResponseEntity<List<FavoritePost>> findFavoritePostsByAuthorIdAndPostName(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId){
+        List<FavoritePost> favoritePosts = favoritePostMapper.findFavoritePostsByAuthorIdAndPostName(postId,authorId);
         if (favoritePosts.isEmpty()) {
             return ResponseEntity.notFound().build(); // 返回404 Not Found
         } else {

@@ -15,24 +15,24 @@ public class LikedPostController {
     @Autowired
     private LikedPostMapper likedPostMapper;
 
-    @PostMapping("create/{postName}")
-    public ResponseEntity<Void> createRelation(@PathVariable String authorId, @PathVariable String postName) {
-        if (likedPostMapper.findLikedPostsByAuthorIdAndPostName(authorId, postName) != null){
+    @PostMapping("create/{postId}")
+    public ResponseEntity<Void> createRelation(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId) {
+        if (likedPostMapper.findLikedPostsByAuthorIdAndPostName(postId, authorId).size() != 0){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        if (likedPostMapper.createRelation(authorId, postName) > 0){
+        if (likedPostMapper.createRelation(postId, authorId) > 0){
             return new ResponseEntity<>(HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("/delete/{postName}")
-    public ResponseEntity<Void> deleteLikedPostRelation(@PathVariable String authorId,@PathVariable String postName) {
-        if (likedPostMapper.findLikedPostsByAuthorIdAndPostName(authorId, postName) == null){
+    @DeleteMapping("/delete/{postId}")
+    public ResponseEntity<Void> deleteLikedPostRelation(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId) {
+        if (likedPostMapper.findLikedPostsByAuthorIdAndPostName(postId, authorId).size() == 0 ){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        if (likedPostMapper.deleteRelation(authorId, postName) > 0){
+        if (likedPostMapper.deleteRelation(postId, authorId) > 0){
             return new ResponseEntity<>(HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -49,9 +49,9 @@ public class LikedPostController {
         }
     }
 
-    @DeleteMapping("/showOne/{postName}")
-    public ResponseEntity<List<LikedPost>> findLikedPostsByAuthorIdAndPostName(@PathVariable String authorId,@PathVariable String postName){
-        List<LikedPost> likedPosts = likedPostMapper.findLikedPostsByAuthorIdAndPostName(authorId,postName);
+    @DeleteMapping("/showOne/{postId}")
+    public ResponseEntity<List<LikedPost>> findLikedPostsByAuthorIdAndPostName(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId){
+        List<LikedPost> likedPosts = likedPostMapper.findLikedPostsByAuthorIdAndPostName(postId, authorId);
         if (likedPosts.isEmpty()) {
             return ResponseEntity.notFound().build(); // 返回404 Not Found
         } else {

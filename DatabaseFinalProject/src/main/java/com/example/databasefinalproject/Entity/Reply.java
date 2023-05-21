@@ -12,6 +12,10 @@ public class Reply {
 
     private Author author;
 
+    private String authorId;
+
+    private int postId;
+
     private Post post;
 
     // Getters and setters
@@ -36,6 +40,14 @@ public class Reply {
         return post;
     }
 
+    public int getPostId() {
+        return postId;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
     public void setReplyId(Integer replyId) {
         this.replyId = replyId;
     }
@@ -54,5 +66,13 @@ public class Reply {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public void setPostId(int postId) {
+        this.postId = postId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 }

@@ -1,5 +1,6 @@
 package com.example.databasefinalproject.Mapper;
 
+import com.example.databasefinalproject.Entity.FavoritePost;
 import com.example.databasefinalproject.Entity.LikedPost;
 import org.apache.ibatis.annotations.*;
 
@@ -7,16 +8,17 @@ import java.util.List;
 
 @Mapper
 public interface LikedPostMapper {
-    @Select("SELECT * FROM liked_posts WHERE author_id = #{authorId} AND post_name = #{postName}")
-    List<LikedPost> findLikedPostsByAuthorIdAndPostName(@Param("authorId") String authorId, @Param("postName") String postName);
 
-    @Insert("INSERT INTO liked_posts (author_id, post_name) VALUES (#{authorId}, #{postName})")
-    int createRelation(@Param("authorId") String authorId, @Param("postName") String postName);
+    @Select("SELECT * FROM liked_posts WHERE post_id = #{postId} AND liking_author_id = #{authorId}")
+    List<LikedPost> findLikedPostsByAuthorIdAndPostName(@Param("postId") int postId, @Param("authorId") String authorId);
 
-    @Delete("DELETE FROM liked_posts WHERE author_id = #{authorId} AND post_name = #{postName}")
-    int deleteRelation(@Param("authorId") String authorId, @Param("postName") String postName);
+    @Insert("INSERT INTO liked_posts (post_id, liking_author_id) VALUES (#{postId}, #{authorId})")
+    int createRelation(@Param("postId") int postId, @Param("authorId") String authorId);
 
-    @Select("SELECT * FROM liked_posts WHERE author_id = #{authorId}")
+    @Delete("DELETE FROM liked_posts WHERE post_id = #{postId} AND liking_author_id = #{authorId}")
+    int deleteRelation(@Param("postId") int postId, @Param("authorId") String authorId);
+
+    @Select("SELECT * FROM liked_posts WHERE liking_author_id = #{authorId}")
     List<LikedPost> findLikedPostsByAuthorId(@Param("authorId") String authorId);
 
 }

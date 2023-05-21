@@ -16,24 +16,24 @@ public class SharedPostController {
     @Autowired
     private SharedPostMapper sharedPostMapper;
 
-    @PostMapping("create/{postName}")
-    public ResponseEntity<Void> createRelation(@PathVariable String authorId, @PathVariable String postName) {
-        if (sharedPostMapper.findRelationByAuthorIdAndPostId(authorId, postName) != null){
+    @PostMapping("create/{postId}")
+    public ResponseEntity<Void> createRelation(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId) {
+        if (sharedPostMapper.findRelationByAuthorIdAndPostId(authorId, postId).size() != 0){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        if (sharedPostMapper.createRelation(authorId, postName) > 0){
+        if (sharedPostMapper.createRelation(authorId, postId) > 0){
             return new ResponseEntity<>(HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    @DeleteMapping("/delete/{postName}")
-    public ResponseEntity<Void> deleteSharedPostRelation(@PathVariable String authorId,@PathVariable String postName) {
-        if (sharedPostMapper.findRelationByAuthorIdAndPostId(authorId, postName) == null){
+    @DeleteMapping("/delete/{postId}")
+    public ResponseEntity<Void> deleteSharedPostRelation(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId) {
+        if (sharedPostMapper.findRelationByAuthorIdAndPostId(authorId, postId).size() == 0){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        if (sharedPostMapper.deleteRelation(authorId, postName) > 0){
+        if (sharedPostMapper.deleteRelation(authorId, postId) > 0){
             return new ResponseEntity<>(HttpStatus.CREATED);
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -50,9 +50,9 @@ public class SharedPostController {
         }
     }
 
-    @DeleteMapping("/showOne/{postName}")
-    public ResponseEntity<List<SharedPost>> findLikedPostsByAuthorIdAndPostName(@PathVariable String authorId, @PathVariable String postName){
-        List<SharedPost> sharedPosts = sharedPostMapper.findRelationByAuthorIdAndPostId(authorId,postName);
+    @DeleteMapping("/showOne/{postId}")
+    public ResponseEntity<List<SharedPost>> findLikedPostsByAuthorIdAndPostName(@PathVariable("postId") int postId, @PathVariable("authorId") String authorId){
+        List<SharedPost> sharedPosts = sharedPostMapper.findRelationByAuthorIdAndPostId(authorId,postId);
         if (sharedPosts.isEmpty()) {
             return ResponseEntity.notFound().build();
         } else {

@@ -11,6 +11,10 @@ public class SecondaryReply {
 
     private Author author;
 
+    private String authorId;
+
+    private int replyId;
+
     private Reply reply;
 
     // Getters and setters
@@ -35,6 +39,14 @@ public class SecondaryReply {
         return reply;
     }
 
+    public int getReplyId() {
+        return replyId;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
     public void setSecondaryReplyId(Integer secondaryReplyId) {
         this.secondaryReplyId = secondaryReplyId;
     }
@@ -53,6 +65,14 @@ public class SecondaryReply {
 
     public void setReply(Reply reply) {
         this.reply = reply;
+    }
+
+    public void setReplyId(int replyId) {
+        this.replyId = replyId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
     }
 }
 

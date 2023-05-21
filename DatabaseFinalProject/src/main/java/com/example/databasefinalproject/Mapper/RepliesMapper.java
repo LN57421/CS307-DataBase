@@ -19,4 +19,7 @@ public interface RepliesMapper {
     @Delete("DELETE FROM replies WHERE author_id = #{authorId} AND reply_id = #{replyId}")
     int deleteReply(@Param("authorId") String authorId, @Param("replyId") int replyId);
 
+    @Select("SELECT * FROM replies WHERE post_id = #{postId}")
+    List<Reply> findReplyByPostId(int postId);
+
 }

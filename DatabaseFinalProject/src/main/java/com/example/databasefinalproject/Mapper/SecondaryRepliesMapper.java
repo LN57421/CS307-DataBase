@@ -1,5 +1,6 @@
 package com.example.databasefinalproject.Mapper;
 
+import com.example.databasefinalproject.Entity.Reply;
 import com.example.databasefinalproject.Entity.SecondaryReply;
 import org.apache.ibatis.annotations.*;
 
@@ -19,4 +20,6 @@ public interface SecondaryRepliesMapper {
     @Delete("DELETE FROM secondary_replies WHERE author_id = #{authorId} AND secondary_reply_id = #{secondaryReplyId}")
     int deleteSecondaryReply(@Param("authorId") String authorId, @Param("secondaryReplyId") int secondaryReplyId);
 
+    @Select("SELECT * FROM secondary_replies WHERE secondary_reply_id = #{replyId}")
+    List<SecondaryReply> findSecondReplyByFirstReplyId(int replyId);
 }
