@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/{authorId}/posts")
 public class PostsController {
-    static int cnt = 2001;
     @Autowired
     private PostsMapper postsMapper;
     @Autowired
@@ -30,7 +29,7 @@ public class PostsController {
                                            String content,
                                            String city,
                                            String state) {
-        int postId = cnt++;
+        int postId = postsMapper.findAllPosts().size() + 1;
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2023);
         calendar.set(Calendar.MONTH, Calendar.MAY); // 注意月份从0开始，所以5表示六月
