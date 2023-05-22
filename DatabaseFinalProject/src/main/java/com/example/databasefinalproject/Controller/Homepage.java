@@ -35,7 +35,11 @@ public class Homepage {
 
     private final FavoritePostMapper favoritePostMapper;
 
-    public Homepage(AuthorsMapper authorsMapper, PostsMapper postsMapper, CityMapper cityMapper, RepliesMapper repliesMapper, SecondaryRepliesMapper secondaryRepliesMapper, FollowsMapper followsMapper, LikedPostMapper likedPostMapper, SharedPostMapper sharedPostMapper, FavoritePostMapper favoritePostMapper) {
+    private final PostCategoryMapper postCategoryMapper;
+
+    private final CategoryMapper categoryMapper;
+
+    public Homepage(AuthorsMapper authorsMapper, PostsMapper postsMapper, CityMapper cityMapper, RepliesMapper repliesMapper, SecondaryRepliesMapper secondaryRepliesMapper, FollowsMapper followsMapper, LikedPostMapper likedPostMapper, SharedPostMapper sharedPostMapper, FavoritePostMapper favoritePostMapper, PostCategoryMapper postCategoryMapper, CategoryMapper categoryMapper) {
         this.authorsMapper = authorsMapper;
         this.postsMapper = postsMapper;
         this.cityMapper = cityMapper;
@@ -45,6 +49,8 @@ public class Homepage {
         this.likedPostMapper = likedPostMapper;
         this.sharedPostMapper = sharedPostMapper;
         this.favoritePostMapper = favoritePostMapper;
+        this.postCategoryMapper = postCategoryMapper;
+        this.categoryMapper = categoryMapper;
     }
 
     @ApiOperation("登录")
@@ -103,6 +109,14 @@ public class Homepage {
         result.add(likedPost);
         result.add(favoritePost);
         result.add(sharedPost);
+        List<PostCategory> categories = postCategoryMapper.findPostCategoriesByPostId(post.getPostId());
+        List<String> categories_result = new ArrayList<>();
+        for (PostCategory p: categories) {
+            categories_result.add(categoryMapper.getCategoryById(p.getPostId()).getCategoryName());
+        }
+        String[] re = new String[20];
+        categories_result.toArray(re); // re 数组中储存了很多category 是一个String类型的数组
+        result.add(re);
         return ResponseEntity.ok(result);
     }
 
@@ -161,4 +175,5 @@ public class Homepage {
         boolean isFollow = followsMapper.findFollowedByAuthorIdAndFollowerId(authorId, followId).size() != 0;
         return ResponseEntity.ok(isFollow);
     }
+
 }
