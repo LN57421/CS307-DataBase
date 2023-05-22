@@ -154,4 +154,11 @@ public class Homepage {
         }
         return ResponseEntity.ok(posts);
     }
+
+    @ApiOperation("获取单个author的信息")
+    @GetMapping(path = "{authorId}/getFollow/{followId}")
+    public ResponseEntity<Object> getPostAuthor(@PathVariable("authorId") String authorId, @PathVariable("followId") String followId){
+        boolean isFollow = followsMapper.findFollowedByAuthorIdAndFollowerId(authorId, followId).size() != 0;
+        return ResponseEntity.ok(isFollow);
+    }
 }

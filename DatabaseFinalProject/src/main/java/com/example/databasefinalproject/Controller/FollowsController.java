@@ -21,7 +21,7 @@ public class FollowsController {
     @ApiOperation("当前用户关注某个用户")
     @PostMapping("create/{follower_author_id}")
     public ResponseEntity<Void> createRelation(@PathVariable String author_id, @PathVariable String follower_author_id) {
-        if (followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id) != null){
+        if (followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id).size() != 0){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         if (followsMapper.createRelation(author_id, follower_author_id) > 0){
@@ -34,7 +34,7 @@ public class FollowsController {
     @ApiOperation("当前用户不再关注某个用户")
     @DeleteMapping("/delete/{follower_author_id}")
     public ResponseEntity<Void> deleteFollowRelation(@PathVariable String author_id, @PathVariable String follower_author_id) {
-        if (followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id) == null){
+        if (followsMapper.findFollowedByAuthorIdAndFollowerId(author_id, follower_author_id).size() == 0){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         if (followsMapper.deleteRelation(author_id, follower_author_id) > 0){
