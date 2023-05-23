@@ -86,5 +86,19 @@ public class Post {
     public void setPostingCity(String postingCity) {
         this.postingCity = postingCity;
     }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "postId=" + postId +
+                ", authorId='" + authorId + '\'' +
+                ", author=" + author +
+                ", title='" + title + '\'' +
+                ", content='" + content + '\'' +
+                ", postingTime=" + postingTime +
+                ", postingCity='" + postingCity + '\'' +
+                ", city=" + city +
+                '}';
+    }
 }
 

@@ -23,4 +23,12 @@ public class SharedPost {
     public void setSharingAuthorId(String sharingAuthorId) {
         this.sharingAuthorId = sharingAuthorId;
     }
+
+    @Override
+    public String toString() {
+        return "SharedPost{" +
+                "postId=" + postId +
+                ", sharingAuthorId='" + sharingAuthorId + '\'' +
+                '}';
+    }
 }

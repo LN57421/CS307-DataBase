@@ -24,4 +24,12 @@ public class FollowedAuthor {
     public void setFollowerAuthorId(String followerAuthorId) {
         this.followerAuthorId = followerAuthorId;
     }
+
+    @Override
+    public String toString() {
+        return "FollowedAuthor{" +
+                "authorId='" + authorId + '\'' +
+                ", followerAuthorId='" + followerAuthorId + '\'' +
+                '}';
+    }
 }

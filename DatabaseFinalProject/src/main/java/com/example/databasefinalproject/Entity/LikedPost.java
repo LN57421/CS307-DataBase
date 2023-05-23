@@ -26,4 +26,11 @@ public class LikedPost {
         this.likingAuthorId = likingAuthorId;
     }
 
+    @Override
+    public String toString() {
+        return "LikedPost{" +
+                "postId=" + postId +
+                ", likingAuthorId='" + likingAuthorId + '\'' +
+                '}';
+    }
 }

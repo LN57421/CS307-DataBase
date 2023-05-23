@@ -22,6 +22,15 @@ public class PostCategory {
     public void setCategoryId(Integer categoryId) {
         this.categoryId = categoryId;
     }
+
+
+    @Override
+    public String toString() {
+        return "PostCategory{" +
+                "postId=" + postId +
+                ", categoryId=" + categoryId +
+                '}';
+    }
 }
 
 

@@ -24,5 +24,11 @@ public class FavoritePost {
         this.favoriteAuthorId = favoriteAuthorId;
     }
 
-
+    @Override
+    public String toString() {
+        return "FavoritePost{" +
+                "postId=" + postId +
+                ", favoriteAuthorId='" + favoriteAuthorId + '\'' +
+                '}';
+    }
 }

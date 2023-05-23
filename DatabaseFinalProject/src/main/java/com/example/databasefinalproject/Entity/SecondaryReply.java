@@ -74,5 +74,18 @@ public class SecondaryReply {
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
     }
+
+    @Override
+    public String toString() {
+        return "SecondaryReply{" +
+                "secondaryReplyId=" + secondaryReplyId +
+                ", content='" + content + '\'' +
+                ", stars=" + stars +
+                ", author=" + author +
+                ", authorId='" + authorId + '\'' +
+                ", replyId=" + replyId +
+                ", reply=" + reply +
+                '}';
+    }
 }
 

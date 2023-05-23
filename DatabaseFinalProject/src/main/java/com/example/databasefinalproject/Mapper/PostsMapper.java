@@ -30,4 +30,32 @@ public interface PostsMapper {
 
     @Select("select * from posts where post_id = #{postId}")
     Post findPostByPostId(int postId);
+
+
+    //返回热门帖子（点赞数最高的十个帖子）
+    @Select("select * from posts where post_id in (SELECT" +
+            "    posts.post_id" +
+            "FROM" +
+            "    posts" +
+            "JOIN" +
+            "    liked_posts ON posts.post_id = liked_posts.post_id" +
+            "GROUP BY" +
+            "    posts.post_id" +
+            "ORDER BY" +
+            "    COUNT(liked_posts.liking_author_id) DESC" +
+            "LIMIT 10);")
+    List<Post> findHostPost();
+
+    // 按时间段搜索帖子
+
+
+    // 按文章标题词进行搜索
+
+
+    // 按文章标题和内容关键词进行搜索
+
+
+    // 按类型搜索帖子
+
+
 }

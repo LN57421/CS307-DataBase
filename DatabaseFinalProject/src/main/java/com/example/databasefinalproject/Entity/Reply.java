@@ -75,4 +75,18 @@ public class Reply {
     public void setAuthorId(String authorId) {
         this.authorId = authorId;
     }
+
+
+    @Override
+    public String toString() {
+        return "Reply{" +
+                "replyId=" + replyId +
+                ", content='" + content + '\'' +
+                ", stars=" + stars +
+                ", author=" + author +
+                ", authorId='" + authorId + '\'' +
+                ", postId=" + postId +
+                ", post=" + post +
+                '}';
+    }
 }
