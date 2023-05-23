@@ -25,6 +25,7 @@ public interface PostsMapper {
     @Select("select * from posts")
     List<Post> findAllPosts();
 
+    // 得到所有帖子
     @Select("select * from posts")
     List<Post> getAllPost();
 
@@ -47,15 +48,21 @@ public interface PostsMapper {
     List<Post> findHostPost();
 
     // 按时间段搜索帖子
+    @Select("select * from posts where posting_time >= #{begin} and posting_time <= #{end}")
+    List<Post> findPostByTimeInterval(Timestamp begin, Timestamp end);
+    // 按文章标题关键词词进行搜索
+    @Select("select * from posts where title like '%#{KeyWord}%'")
+    List<Post> findPostByKeyWordInTitle(String keyWord);
 
-
-    // 按文章标题词进行搜索
-
-
-    // 按文章标题和内容关键词进行搜索
-
+    // 按文章内容关键词进行搜索
+    @Select("select * from posts where content like '%#{KeyWord}%'")
+    List<Post> findPostByKeyWordInContent(String keyWord);
 
     // 按类型搜索帖子
-
+    @Select("select * from posts where post_id in (SELECT posts.post_id FROM posts JOIN post_categories ON posts.post_id = post_categories.post_id JOIN" +
+            "    categories ON post_categories.category_id = categories.category_id" +
+            "            WHERE" +
+            "    categories.category_name LIKE '%#{category_name}%')")
+    List<Post> findPostByCategory(String category_name);
 
 }
