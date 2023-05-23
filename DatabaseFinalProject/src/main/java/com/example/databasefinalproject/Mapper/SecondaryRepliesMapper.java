@@ -8,13 +8,19 @@ import java.util.List;
 
 @Mapper
 public interface SecondaryRepliesMapper {
-    @Insert("INSERT INTO secondary_replies (secondary_reply_id, content, stars, author_id, reply_id) VALUES (#{secondaryReplyId}, #{content}, #{stars}, #{authorId}, #{replyId})")
-    int createSecondaryReply(@Param("secondaryReplyId") int secondaryReplyId, @Param("content") int content, @Param("stars") String stars, @Param("authorId") String authorId, @Param("replyId") int replyId);
+    @Insert("INSERT INTO secondary_replies (secondary_reply_id, content, stars, author_id, reply_id, is_anonymous) VALUES (#{secondaryReplyId}, #{content}, #{stars}, #{authorId}, #{replyId}, #{is_anonymous})")
+    int createSecondaryReply(@Param("secondaryReplyId") int secondaryReplyId,
+                             @Param("content") int content,
+                             @Param("stars") String stars,
+                             @Param("authorId") String authorId,
+                             @Param("replyId") int replyId,
+                             @Param("is_anonymous") boolean is_anonymous);
 
-    @Select("SELECT * FROM secondary_replies WHERE author_id = #{authorId} AND secondary_reply_id = #{secondaryReplyId}")
-    List<SecondaryReply> findSecondaryReplyByAuthorIdAndSecondaryReplyId(@Param("authorId") String authorId, @Param("secondaryReplyId") int secondaryReplyId);
+    @Select("SELECT * FROM secondary_replies WHERE author_id = #{authorId} AND secondary_reply_id = #{secondaryReplyId} ")
+    List<SecondaryReply> findSecondaryReplyByAuthorIdAndSecondaryReplyId(@Param("authorId") String authorId,
+                                                                         @Param("secondaryReplyId") int secondaryReplyId);
 
-    @Select("SELECT * FROM secondary_replies WHERE author_id = #{authorId}")
+    @Select("SELECT * FROM secondary_replies WHERE author_id = #{authorId} AND is_anonymous = false")
     List<SecondaryReply> findSecondaryRepliesByAuthorId(@Param("authorId") String authorId);
 
     @Delete("DELETE FROM secondary_replies WHERE author_id = #{authorId} AND secondary_reply_id = #{secondaryReplyId}")

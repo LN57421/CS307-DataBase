@@ -19,10 +19,10 @@ public class SecondaryRepliesController {
 
     @ApiOperation("创建一条新的次级回复")
     @PostMapping("/create")
-    public ResponseEntity<Void> createSecondaryReply(@PathVariable String authorId, String content,@PathVariable int replyId) {
+    public ResponseEntity<Void> createSecondaryReply(@PathVariable String authorId, String content,@PathVariable int replyId, boolean is_anonymous) {
         int secondaryReplyId = findSecondaryRepliesByAuthorId(authorId).size();
         int star = 0;
-        if (secondaryRepliesMapper.createSecondaryReply(secondaryReplyId, star, content, authorId, replyId) > 0) {
+        if (secondaryRepliesMapper.createSecondaryReply(secondaryReplyId, star, content, authorId, replyId, is_anonymous) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 创建成功
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 创建失败

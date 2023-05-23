@@ -19,10 +19,10 @@ public class RepliesController {
 
     @ApiOperation("创建一条新回复")
     @PostMapping("/create")
-    public ResponseEntity<Void> createReply(@PathVariable String authorId, String content,@PathVariable String postID) {
+    public ResponseEntity<Void> createReply(@PathVariable String authorId, String content,@PathVariable String postID, boolean is_anonymous) {
         int replyId = findRepliesByAuthorId(authorId).size();
         int star = 0;
-        if (repliesMapper.createReply(replyId, star, content, authorId, postID) > 0) {
+        if (repliesMapper.createReply(replyId, star, content, authorId, postID, is_anonymous) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 创建成功
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 创建失败
