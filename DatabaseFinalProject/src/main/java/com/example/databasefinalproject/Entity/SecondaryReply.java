@@ -17,6 +17,16 @@ public class SecondaryReply {
 
     private Reply reply;
 
+    private boolean is_anonymous;
+
+    public void setIs_anonymous(boolean is_anonymous) {
+        this.is_anonymous = is_anonymous;
+    }
+
+    public boolean isIs_anonymous() {
+        return is_anonymous;
+    }
+
     // Getters and setters
 
     public Integer getSecondaryReplyId() {
@@ -85,6 +95,7 @@ public class SecondaryReply {
                 ", authorId='" + authorId + '\'' +
                 ", replyId=" + replyId +
                 ", reply=" + reply +
+                ", is_anonymous=" + is_anonymous +
                 '}';
     }
 }

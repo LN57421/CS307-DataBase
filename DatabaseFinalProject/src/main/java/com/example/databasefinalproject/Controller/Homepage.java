@@ -8,8 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Controller
@@ -37,7 +39,12 @@ public class Homepage {
 
     private final CategoryMapper categoryMapper;
 
-    public Homepage(AuthorsMapper authorsMapper, PostsMapper postsMapper, CityMapper cityMapper, RepliesMapper repliesMapper, SecondaryRepliesMapper secondaryRepliesMapper, FollowsMapper followsMapper, LikedPostMapper likedPostMapper, SharedPostMapper sharedPostMapper, FavoritePostMapper favoritePostMapper, PostCategoryMapper postCategoryMapper, CategoryMapper categoryMapper) {
+    private final BlacklistMapper blacklistMapper;
+    public Homepage(AuthorsMapper authorsMapper, PostsMapper postsMapper, CityMapper cityMapper, RepliesMapper repliesMapper,
+                    SecondaryRepliesMapper secondaryRepliesMapper, FollowsMapper followsMapper,
+                    LikedPostMapper likedPostMapper, SharedPostMapper sharedPostMapper,
+                    FavoritePostMapper favoritePostMapper, PostCategoryMapper postCategoryMapper,
+                    CategoryMapper categoryMapper, BlacklistMapper blacklistMapper) {
         this.authorsMapper = authorsMapper;
         this.postsMapper = postsMapper;
         this.cityMapper = cityMapper;
@@ -49,6 +56,7 @@ public class Homepage {
         this.favoritePostMapper = favoritePostMapper;
         this.postCategoryMapper = postCategoryMapper;
         this.categoryMapper = categoryMapper;
+        this.blacklistMapper = blacklistMapper;
     }
 
     @ApiOperation("登录")
@@ -68,8 +76,8 @@ public class Homepage {
         }
     }
     @ApiOperation("获取帖子")
-    @GetMapping(path = "posts")
-    public ResponseEntity<Object> getPosts(){
+    @GetMapping(path = "{authorId}/AllPosts/{login}")
+    public ResponseEntity<Object> getPosts(@PathVariable("authorId") String authorId, @PathVariable("login") boolean login){
         List<Post> posts = postsMapper.getAllPost();
         for (Post temp: posts) {
             Author author = authorsMapper.findByID(temp.getAuthorId());
@@ -77,8 +85,114 @@ public class Homepage {
             temp.setAuthor(author);
             temp.setCity(city);
         }
+        if (login){
+            List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
         return ResponseEntity.ok(posts);
     }
+
+    @ApiOperation("获取热搜帖子")
+    @GetMapping(path = "{authorId}/HostPosts/{login}")
+    public ResponseEntity<Object> getHostPosts(@PathVariable("authorId") String authorId, @PathVariable("login") boolean login){
+        List<Post> posts = postsMapper.findHostPost();
+        for (Post temp: posts) {
+            Author author = authorsMapper.findByID(temp.getAuthorId());
+            City city = cityMapper.findCityByName(temp.getPostingCity());
+            temp.setAuthor(author);
+            temp.setCity(city);
+        }
+        if (login){
+            List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
+        return ResponseEntity.ok(posts);
+    }
+
+    @ApiOperation("根据时间搜索帖子")
+    @GetMapping(path = "{authorId}/PostsByTime/{login}")
+    public ResponseEntity<Object> getPostsByTimeInterval(@RequestParam(required = true) Timestamp startTime,
+                                                         @RequestParam(required = true) Timestamp endTime,
+                                                         @PathVariable("authorId") String authorId,
+                                                         @PathVariable("login") boolean login){
+        List<Post> posts = postsMapper.findPostByTimeInterval(startTime, endTime);
+        for (Post temp: posts) {
+            Author author = authorsMapper.findByID(temp.getAuthorId());
+            City city = cityMapper.findCityByName(temp.getPostingCity());
+            temp.setAuthor(author);
+            temp.setCity(city);
+        }
+        if (login){
+            List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
+        return ResponseEntity.ok(posts);
+    }
+
+    @ApiOperation("按文章标题关键词词进行搜索")
+    @GetMapping(path = "{authorId}/PostsByKeyWordInTitles/{login}")
+    public ResponseEntity<Object> getPostsByKeyWordInTitles(@RequestParam(required = true) String keyWords,
+                                                             @PathVariable("authorId") String authorId,
+                                                            @PathVariable("login") boolean login){
+        List<Post> posts = postsMapper.findPostByKeyWordInTitle(keyWords);
+        for (Post temp: posts) {
+            Author author = authorsMapper.findByID(temp.getAuthorId());
+            City city = cityMapper.findCityByName(temp.getPostingCity());
+            temp.setAuthor(author);
+            temp.setCity(city);
+        }
+        if (login){
+            List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
+        return ResponseEntity.ok(posts);
+    }
+
+    @ApiOperation("按文章内容关键词词进行搜索")
+    @GetMapping(path = "{authorId}/PostsByKeyWordInContents/{login}")
+    public ResponseEntity<Object> getPostsByKeyWordInContent(@RequestParam(required = true) String keyWords,
+                                                             @PathVariable("authorId") String authorId,
+                                                             @PathVariable("login") boolean login){
+        List<Post> posts = postsMapper.findPostByKeyWordInContent(keyWords);
+        for (Post temp: posts) {
+            Author author = authorsMapper.findByID(temp.getAuthorId());
+            City city = cityMapper.findCityByName(temp.getPostingCity());
+            temp.setAuthor(author);
+            temp.setCity(city);
+        }
+        if (login){
+            List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
+        return ResponseEntity.ok(posts);
+    }
+
+
 
     @ApiOperation("获取单个帖子的所有具体信息")
     @GetMapping(path = "{authorId}/postContent/{id}")
@@ -119,7 +233,7 @@ public class Homepage {
     }
 
     @ApiOperation("返回FavorPost")
-    @GetMapping(path = "{authorId}/showFavor")
+    @GetMapping(path = "{authorId}/showFavor/{login}")
     public ResponseEntity<Object> getFavor(@PathVariable("authorId") String authorId){
         List<FavoritePost> favoritePosts = favoritePostMapper.findFavoritePostsByAuthorId(authorId);
         List<Post> posts = new ArrayList<>();
@@ -135,7 +249,7 @@ public class Homepage {
         return ResponseEntity.ok(posts);
     }
     @ApiOperation("返回likePost")
-    @GetMapping(path = "{authorId}/showLike")
+    @GetMapping(path = "{authorId}/showLike/{login}")
     public ResponseEntity<Object> getLike(@PathVariable("authorId") String authorId){
         List<LikedPost> likedPosts = likedPostMapper.findLikedPostsByAuthorId(authorId);
         List<Post> posts = new ArrayList<>();
@@ -204,5 +318,6 @@ public class Homepage {
         });
         return ResponseEntity.ok(createPosts);
     }
+
 
 }

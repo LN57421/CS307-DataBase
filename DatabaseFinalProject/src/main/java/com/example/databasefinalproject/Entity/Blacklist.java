@@ -3,8 +3,8 @@ package com.example.databasefinalproject.Entity;
 
 public class Blacklist {
     private Integer id;
-    private int authorId;
-    private int blockedAuthorId;
+    private String authorId;
+    private String blockedAuthorId;
 
     // 构造函数、getter和setter方法省略
 
@@ -12,11 +12,11 @@ public class Blacklist {
         return id;
     }
 
-    public int getAuthorId() {
+    public String getAuthorId() {
         return authorId;
     }
 
-    public int getBlockedAuthorId() {
+    public String getBlockedAuthorId() {
         return blockedAuthorId;
     }
 
@@ -24,11 +24,11 @@ public class Blacklist {
         this.id = id;
     }
 
-    public void setAuthorId(int authorId) {
+    public void setAuthorId(String authorId) {
         this.authorId = authorId;
     }
 
-    public void setBlockedAuthorId(int blockedAuthorId) {
+    public void setBlockedAuthorId(String blockedAuthorId) {
         this.blockedAuthorId = blockedAuthorId;
     }
 

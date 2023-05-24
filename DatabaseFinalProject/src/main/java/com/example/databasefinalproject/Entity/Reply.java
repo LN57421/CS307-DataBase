@@ -18,7 +18,16 @@ public class Reply {
 
     private Post post;
 
-    // Getters and setters
+    private boolean is_anonymous;
+
+    public void setIs_anonymous(boolean is_anonymous) {
+        this.is_anonymous = is_anonymous;
+    }
+
+    public boolean isIs_anonymous() {
+        return is_anonymous;
+    }
+// Getters and setters
 
     public Integer getReplyId() {
         return replyId;
@@ -87,6 +96,7 @@ public class Reply {
                 ", authorId='" + authorId + '\'' +
                 ", postId=" + postId +
                 ", post=" + post +
+                ", is_anonymous=" + is_anonymous +
                 '}';
     }
 }

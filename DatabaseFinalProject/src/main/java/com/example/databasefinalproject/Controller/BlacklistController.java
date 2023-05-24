@@ -19,7 +19,7 @@ public class BlacklistController {
 
     @ApiOperation("将用户加入黑名单")
     @PostMapping("/add/{blockedAuthorId}")
-    public ResponseEntity<Void> addToBlacklist(@PathVariable int authorId, @PathVariable  int blockedAuthorId) {
+    public ResponseEntity<Void> addToBlacklist(@PathVariable String authorId, @PathVariable  String blockedAuthorId) {
         if (blacklistMapper.addToBlacklist(authorId, blockedAuthorId) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 创建成功
         } else {
@@ -29,7 +29,7 @@ public class BlacklistController {
 
     @ApiOperation("将用户从黑名单中移除")
     @DeleteMapping("/remove/{blockedAuthorId}")
-    public ResponseEntity<Void> removeFromBlacklist(@PathVariable Integer blockedAuthorId) {
+    public ResponseEntity<Void> removeFromBlacklist(@PathVariable String blockedAuthorId) {
         if (blacklistMapper.removeFromBlacklist(blockedAuthorId) > 0) {
             return new ResponseEntity<>(HttpStatus.OK); // 200 移除成功
         } else {
@@ -39,7 +39,7 @@ public class BlacklistController {
 
     @ApiOperation("获取某用户的黑名单列表")
     @GetMapping("/list")
-    public List<Blacklist> getBlacklistByAuthorId(@PathVariable int authorId) {
+    public List<Blacklist> getBlacklistByAuthorId(@PathVariable String authorId) {
         return blacklistMapper.getBlacklistByAuthorId(authorId);
     }
 }
