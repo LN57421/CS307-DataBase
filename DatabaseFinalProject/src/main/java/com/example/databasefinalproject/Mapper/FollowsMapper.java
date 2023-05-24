@@ -18,4 +18,6 @@ public interface FollowsMapper {
 
     @Select("SELECT * FROM followed_authors WHERE author_id = #{authorId}")
     List<FollowedAuthor> findFollowedByAuthorId(@Param("authorId") String authorId);
+    @Select("SELECT * FROM followed_authors WHERE follower_author_id = #{authorId}")
+    List<FollowedAuthor> findFollowingByAuthorId(@Param("authorId") String authorId);
 }

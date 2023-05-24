@@ -107,14 +107,14 @@ public class Homepage {
         result.add(likedPost);
         result.add(favoritePost);
         result.add(sharedPost);
-        List<PostCategory> categories = postCategoryMapper.findPostCategoriesByPostId(post.getPostId());
-        List<String> categories_result = new ArrayList<>();
-        for (PostCategory p: categories) {
-            categories_result.add(categoryMapper.getCategoryById(p.getPostId()).getCategoryName());
-        }
-        String[] re = new String[20];
-        categories_result.toArray(re); // re 数组中储存了很多category 是一个String类型的数组
-        result.add(re);
+//        List<PostCategory> categories = postCategoryMapper.findPostCategoriesByPostId(post.getPostId());
+//        List<String> categories_result = new ArrayList<>();
+//        for (PostCategory p: categories) {
+//            categories_result.add(categoryMapper.getCategoryById(p.getPostId()).getCategoryName());
+//        }
+//        String[] re = new String[20];
+//        categories_result.toArray(re); // re 数组中储存了很多category 是一个String类型的数组
+//        result.add(re);
         return ResponseEntity.ok(result);
     }
 
@@ -172,6 +172,37 @@ public class Homepage {
     public ResponseEntity<Object> getPostAuthor(@PathVariable("authorId") String authorId, @PathVariable("followId") String followId){
         boolean isFollow = followsMapper.findFollowedByAuthorIdAndFollowerId(authorId, followId).size() != 0;
         return ResponseEntity.ok(isFollow);
+    }
+
+    @ApiOperation("获取作者关注列表")
+    @GetMapping(path = "{authorId}/getFollowList")
+    public ResponseEntity<Object> getFollowList(@PathVariable("authorId") String authorId){
+        List<FollowedAuthor> followedAuthors = followsMapper.findFollowingByAuthorId(authorId);
+        List<Author> authors = new ArrayList<>();
+        followedAuthors.forEach(followedAuthor -> {
+            authors.add(authorsMapper.findByID(followedAuthor.getAuthorId()));
+        });
+        boolean[] isFollow = new boolean[followedAuthors.size()];
+        for (int i = 0; i < followedAuthors.size(); i++) {
+            isFollow[i] = true;
+        }
+        List<Object> result = new ArrayList<>();
+        result.add(authors);
+        result.add(isFollow);
+        return ResponseEntity.ok(result);
+    }
+
+    @ApiOperation("获取个人创建信息")
+    @GetMapping(path = "{authorId}/showPost")
+    public ResponseEntity<Object> showPost(@PathVariable("authorId") String authorId){
+        List<Post> createPosts = postsMapper.findPostsByAuthorId(authorId);
+        Author author = authorsMapper.findByID(authorId);
+        createPosts.forEach(post -> {
+            City city = cityMapper.findCityByName(post.getPostingCity());
+            post.setAuthor(author);
+            post.setCity(city);
+        });
+        return ResponseEntity.ok(createPosts);
     }
 
 }

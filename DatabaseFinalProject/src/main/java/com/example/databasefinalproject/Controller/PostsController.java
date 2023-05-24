@@ -23,12 +23,11 @@ public class PostsController {
     private CityMapper cityMapper;
 
     @ApiOperation("创建新的帖子")
-    @PostMapping("/create")
-    public ResponseEntity<Void> createPost(@PathVariable("authorId") String authorId,
-                                           String title,
-                                           String content,
-                                           String city,
-                                           String state) {
+    @PostMapping("/create/{state}")
+    public ResponseEntity<Void> createPost(@PathVariable("authorId") String authorId, @PathVariable("state") String state,@RequestBody Post post) {
+        String title = post.getTitle();
+        String content = post.getContent();
+        String city = post.getPostingCity();
         int postId = postsMapper.findAllPosts().size() + 1;
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, 2023);
@@ -40,10 +39,10 @@ public class PostsController {
         calendar.set(Calendar.MILLISECOND, 0);
         Date date = calendar.getTime();
         Timestamp registrationTime = new Timestamp(date.getTime());
+        if (cityMapper.findCityByName(city) == null) {
+            cityMapper.createCity(city, state); // 如果城市不存在，先添加城市
+        }
         if (postsMapper.createPost(postId, authorId, title, content, registrationTime,city) > 0){
-            if (cityMapper.findCityByName(city) == null) {
-                cityMapper.createCity(city, state); // 如果城市不存在，先添加城市
-            }
             return new ResponseEntity<>(HttpStatus.CREATED);//201
         }else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);//500
