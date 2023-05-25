@@ -3,18 +3,15 @@ package com.example.databasefinalproject.Controller;
 import com.example.databasefinalproject.Entity.*;
 import com.example.databasefinalproject.Mapper.*;
 import io.swagger.annotations.ApiOperation;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+
+import java.util.*;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 
 @Controller
@@ -90,7 +87,6 @@ public class Homepage {
         }
         if (login){
             List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
-
             if (blacklists.size() != 0){
                 for (Blacklist blacklist: blacklists) {
                     posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
@@ -112,7 +108,6 @@ public class Homepage {
         }
         if (login){
             List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
-
             if (blacklists.size() != 0){
                 for (Blacklist blacklist: blacklists) {
                     posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
@@ -124,8 +119,8 @@ public class Homepage {
 
     @ApiOperation("根据时间搜索帖子")
     @GetMapping(path = "{authorId}/PostsByTime/{login}")
-    public ResponseEntity<Object> getPostsByTimeInterval(@RequestParam(required = true) Timestamp startTime,
-                                                         @RequestParam(required = true) Timestamp endTime,
+    public ResponseEntity<Object> getPostsByTimeInterval(@RequestBody Timestamp startTime,
+                                                         @RequestBody Timestamp endTime,
                                                          @PathVariable("authorId") String authorId,
                                                          @PathVariable("login") boolean login){
         List<Post> posts = postsMapper.findPostByTimeInterval(startTime, endTime);
@@ -137,7 +132,6 @@ public class Homepage {
         }
         if (login){
             List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
-
             if (blacklists.size() != 0){
                 for (Blacklist blacklist: blacklists) {
                     posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
@@ -149,10 +143,16 @@ public class Homepage {
 
     @ApiOperation("按文章标题关键词词进行搜索")
     @GetMapping(path = "{authorId}/PostsByKeyWordInTitles/{login}")
-    public ResponseEntity<Object> getPostsByKeyWordInTitles(@RequestParam(required = true) String keyWords,
+    public ResponseEntity<Object> getPostsByKeyWordInTitles(@RequestBody  String[] keyWords,
                                                              @PathVariable("authorId") String authorId,
                                                             @PathVariable("login") boolean login){
-        List<Post> posts = postsMapper.findPostByKeyWordInTitle(keyWords);
+        Set<Post> postSet = new HashSet<>();
+        List<Post> posts;
+        for (String key: keyWords) {
+            posts = postsMapper.findPostByKeyWordInTitle(key);
+            postSet.addAll(posts);
+        }
+        posts = new ArrayList<>(postSet);
         for (Post temp: posts) {
             Author author = authorsMapper.findByID(temp.getAuthorId());
             City city = cityMapper.findCityByName(temp.getPostingCity());
@@ -161,7 +161,6 @@ public class Homepage {
         }
         if (login){
             List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
-
             if (blacklists.size() != 0){
                 for (Blacklist blacklist: blacklists) {
                     posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
@@ -173,10 +172,16 @@ public class Homepage {
 
     @ApiOperation("按文章内容关键词词进行搜索")
     @GetMapping(path = "{authorId}/PostsByKeyWordInContents/{login}")
-    public ResponseEntity<Object> getPostsByKeyWordInContent(@RequestParam(required = true) String keyWords,
+    public ResponseEntity<Object> getPostsByKeyWordInContent(@RequestBody  String[] keyWords,
                                                              @PathVariable("authorId") String authorId,
                                                              @PathVariable("login") boolean login){
-        List<Post> posts = postsMapper.findPostByKeyWordInContent(keyWords);
+        Set<Post> postSet = new HashSet<>();
+        List<Post> posts;
+        for (String key: keyWords) {
+            posts = postsMapper.findPostByKeyWordInContent(key);
+            postSet.addAll(posts);
+        }
+        posts = new ArrayList<>(postSet);
         for (Post temp: posts) {
             Author author = authorsMapper.findByID(temp.getAuthorId());
             City city = cityMapper.findCityByName(temp.getPostingCity());
@@ -185,7 +190,35 @@ public class Homepage {
         }
         if (login){
             List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
+        return ResponseEntity.ok(posts);
+    }
 
+    @ApiOperation("按文章类型进行搜索")
+    @GetMapping(path = "{authorId}/getPostsByCategory/{login}")
+    public ResponseEntity<Object> getPostsByCategory(@RequestBody  String[] Categories,
+                                                             @PathVariable("authorId") String authorId,
+                                                             @PathVariable("login") boolean login){
+        Set<Post> postSet = new HashSet<>();
+        List<Post> posts;
+        for (String key: Categories) {
+            posts = postsMapper.findPostByCategory(key);
+            postSet.addAll(posts);
+        }
+        posts = new ArrayList<>(postSet);
+        for (Post temp: posts) {
+            Author author = authorsMapper.findByID(temp.getAuthorId());
+            City city = cityMapper.findCityByName(temp.getPostingCity());
+            temp.setAuthor(author);
+            temp.setCity(city);
+        }
+        if (login){
+            List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
             if (blacklists.size() != 0){
                 for (Blacklist blacklist: blacklists) {
                     posts.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
@@ -347,6 +380,4 @@ public class Homepage {
         });
         return ResponseEntity.ok(postList);
     }
-
-
 }
