@@ -11,18 +11,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{authorId}/{replyId}/secondaryReplies")
+@RequestMapping("/{authorId}/secondaryReplies")
 public class SecondaryRepliesController {
 
     @Autowired
     private SecondaryRepliesMapper secondaryRepliesMapper;
 
     @ApiOperation("创建一条新的次级回复")
-    @PostMapping("/create")
-    public ResponseEntity<Void> createSecondaryReply(@PathVariable String authorId, String content,@PathVariable int replyId, boolean is_anonymous) {
-        int secondaryReplyId = findSecondaryRepliesByAuthorId(authorId).size();
+    @PostMapping("/create/{isAnonymous}")
+    public ResponseEntity<Void> createSecondaryReply(@PathVariable String authorId, @RequestBody SecondaryReply secondaryReply,@PathVariable("isAnonymous") boolean is_anonymous) {
+        String content = secondaryReply.getContent();
+        int replyId = secondaryReply.getReplyId();
+        int secondaryReplyId = secondaryRepliesMapper.findSecondaryReplySize() + 1;
         int star = 0;
-        if (secondaryRepliesMapper.createSecondaryReply(secondaryReplyId, star, content, authorId, replyId, is_anonymous) > 0) {
+        if (secondaryRepliesMapper.createSecondaryReply(secondaryReplyId, content, star, authorId, replyId, is_anonymous) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 创建成功
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 创建失败

@@ -3,6 +3,9 @@ package com.example.databasefinalproject.Controller;
 import com.example.databasefinalproject.Entity.*;
 import com.example.databasefinalproject.Mapper.*;
 import io.swagger.annotations.ApiOperation;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -196,7 +199,7 @@ public class Homepage {
 
     @ApiOperation("获取单个帖子的所有具体信息")
     @GetMapping(path = "{authorId}/postContent/{id}")
-    public ResponseEntity<Object> getPostInfo(@PathVariable("id") int id, @PathVariable("authorId") String authorId){
+    public ResponseEntity<Object> getPostInfo(@PathVariable("authorId") String authorId, @PathVariable("id") int id){
         Post post = postsMapper.findPostByPostId(id);
         post.setAuthor(authorsMapper.findByID(post.getAuthorId()));
         List<Reply> replies = repliesMapper.findReplyByPostId(post.getPostId());
@@ -317,6 +320,32 @@ public class Homepage {
             post.setCity(city);
         });
         return ResponseEntity.ok(createPosts);
+    }
+
+    @ApiOperation("获取个人回复的帖子")
+    @GetMapping(path = "{authorId}/showReplied")
+    public ResponseEntity<Object> showReplied(@PathVariable("authorId") String authorId){
+        List<Reply> replies = repliesMapper.findOwnFirstReply(authorId);
+        List<SecondaryReply> secondaryReplies = secondaryRepliesMapper.findOwnSecondReply(authorId);
+        Map<Integer, Integer> posts = new HashMap<>();
+        replies.forEach(reply -> {
+            posts.put(postsMapper.findPostByPostId(reply.getPostId()).getPostId(), 1);
+        });
+        secondaryReplies.forEach(secondaryReply -> {
+            posts.put(postsMapper.findPostByPostId(repliesMapper.findReplyByReplyId(secondaryReply.getReplyId()).getPostId()).getPostId(), 1);
+        });
+        Set<Integer> postIdList = posts.keySet();
+        List<Post> postList = new ArrayList<>();
+        postIdList.forEach(integer -> {
+            postList.add(postsMapper.findPostByPostId(integer));
+        });
+        postList.forEach(post -> {
+            Author author = authorsMapper.findByID(post.getAuthorId());
+            City city = cityMapper.findCityByName(post.getPostingCity());
+            post.setAuthor(author);
+            post.setCity(city);
+        });
+        return ResponseEntity.ok(postList);
     }
 
 

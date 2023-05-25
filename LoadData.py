@@ -411,7 +411,7 @@ def loadCity():
 
 
 if __name__ == '__main__':
-    connect = psql.connect(host="localhost", port=5432, user="checker", password="123456", database="lab9")
+    connect = psql.connect(host="localhost", port=5432, user="postgres", password="123456", database="Project1")
     cur = connect.cursor()
     connect.autocommit = False
     timeNeed = []

@@ -11,18 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/{authorId}/{postID}/replies")
+@RequestMapping("/{authorId}/replies")
 public class RepliesController {
 
     @Autowired
     private RepliesMapper repliesMapper;
 
     @ApiOperation("创建一条新回复")
-    @PostMapping("/create")
-    public ResponseEntity<Void> createReply(@PathVariable String authorId, String content,@PathVariable String postID, boolean is_anonymous) {
-        int replyId = findRepliesByAuthorId(authorId).size();
+    @PostMapping("/create/{isAnonymous}")
+    public ResponseEntity<Void> createReply(@PathVariable("authorId") String authorId, @RequestBody Reply reply, @PathVariable("isAnonymous") boolean is_anonymous) {
+        int replyId = repliesMapper.findReplySize() + 1;
         int star = 0;
-        if (repliesMapper.createReply(replyId, star, content, authorId, postID, is_anonymous) > 0) {
+        if (repliesMapper.createReply(replyId, reply.getContent(), star, authorId,reply.getPostId(), is_anonymous) > 0) {
             return new ResponseEntity<>(HttpStatus.CREATED); // 201 创建成功
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 创建失败
