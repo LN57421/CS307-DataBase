@@ -16,7 +16,7 @@ import java.util.Random;
 
 @RestController
 @RequestMapping("api/Authors")
-public class AuthorsRestController {
+public class AuthorsController {
 
     @Autowired
     private AuthorsMapper authorsMapper;

@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 
 
 @Controller
-public class Homepage {
+public class HomepageController {
 
     private final AuthorsMapper authorsMapper;
 
@@ -40,11 +40,11 @@ public class Homepage {
     private final CategoryMapper categoryMapper;
 
     private final BlacklistMapper blacklistMapper;
-    public Homepage(AuthorsMapper authorsMapper, PostsMapper postsMapper, CityMapper cityMapper, RepliesMapper repliesMapper,
-                    SecondaryRepliesMapper secondaryRepliesMapper, FollowsMapper followsMapper,
-                    LikedPostMapper likedPostMapper, SharedPostMapper sharedPostMapper,
-                    FavoritePostMapper favoritePostMapper, PostCategoryMapper postCategoryMapper,
-                    CategoryMapper categoryMapper, BlacklistMapper blacklistMapper) {
+    public HomepageController(AuthorsMapper authorsMapper, PostsMapper postsMapper, CityMapper cityMapper, RepliesMapper repliesMapper,
+                              SecondaryRepliesMapper secondaryRepliesMapper, FollowsMapper followsMapper,
+                              LikedPostMapper likedPostMapper, SharedPostMapper sharedPostMapper,
+                              FavoritePostMapper favoritePostMapper, PostCategoryMapper postCategoryMapper,
+                              CategoryMapper categoryMapper, BlacklistMapper blacklistMapper) {
         this.authorsMapper = authorsMapper;
         this.postsMapper = postsMapper;
         this.cityMapper = cityMapper;
