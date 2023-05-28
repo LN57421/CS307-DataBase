@@ -7,7 +7,7 @@ import axios from 'axios'
 import ElementUI from 'element-ui';
 import store from './store';
 
-axios.defaults.baseURL = "http://localhost:9090"
+axios.defaults.baseURL = "http://10.26.144.3:9090"
 window.addEventListener('beforeunload', () => {
 	localStorage.setItem('storeState', JSON.stringify(this.$store.state));
   });

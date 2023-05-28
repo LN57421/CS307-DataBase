@@ -29,8 +29,8 @@ public class BlacklistController {
 
     @ApiOperation("将用户从黑名单中移除")
     @DeleteMapping("/remove/{blockedAuthorId}")
-    public ResponseEntity<Void> removeFromBlacklist(@PathVariable String blockedAuthorId) {
-        if (blacklistMapper.removeFromBlacklist(blockedAuthorId) > 0) {
+    public ResponseEntity<Void> removeFromBlacklist(@PathVariable String authorId, @PathVariable String blockedAuthorId) {
+        if (blacklistMapper.removeFromBlacklist(blockedAuthorId, authorId) > 0) {
             return new ResponseEntity<>(HttpStatus.OK); // 200 移除成功
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR); // 500 移除失败
@@ -42,4 +42,6 @@ public class BlacklistController {
     public List<Blacklist> getBlacklistByAuthorId(@PathVariable String authorId) {
         return blacklistMapper.getBlacklistByAuthorId(authorId);
     }
+
+
 }

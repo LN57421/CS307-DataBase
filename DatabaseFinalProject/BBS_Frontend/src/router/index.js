@@ -3,12 +3,13 @@ import Router from 'vue-router'
 import PostList from '@/components/PostList'
 import Article from '@/components/Article'
 import SideBar from '@/components/SideBar'
-import UserInfo from '@/components/UserInfo'
 import Header from '@/components/Header'
 import Login from '@/components/Login'
 import SideColumn from '@/components/SideColumn'
 import CreatePost from '@/components/CreatePost'
 import FollowAuthor from '@/components/FollowAuthor'
+import DashBoard from '@/components/DashBoard'
+import BlackAuthor from '@/components/BlackAuthor'
 
 Vue.use(Router)
 
@@ -19,6 +20,7 @@ export default new Router({
 			path: '/',
 			name: 'root',
 			components: {
+        contain:DashBoard,
 				header: Header,
 				sideColumn: SideColumn
 			}
@@ -69,6 +71,15 @@ export default new Router({
       }
     },
     {
+      path: '/blackList',
+      name: 'blackList',
+      components: {
+        main: BlackAuthor,
+        header: Header,
+        sideColumn: SideColumn
+      }
+    },
+    {
       path: '/createdPost',
       name: 'createdPost',
       components: {
@@ -104,14 +115,6 @@ export default new Router({
 				sideColumn: SideColumn,
 				sidebar: SideBar
 			},
-		},
-		{
-			path: '/user/:name',
-			name: 'user_info',
-			components: {
-				main: UserInfo,
-				header: Header
-			}
 		},
 		{
 			path: '/login',

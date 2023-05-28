@@ -4,16 +4,17 @@
 	        Loading...
 	    </div>
 		<div v-else class="autherinfo">
+      <el-dialog :visible="dialogVisible" title="Please login first!" @close="closeDialog" ></el-dialog>
 			<div class="authersummay">
 				<p style="background-size:cover; background-image:url(https://img.paulzzh.com/touhou/random);font-size:20px" >author</p>
-				<router-link  :to="{ name: 'user_info', params: { name: userinfo.authorName }}">
-					      <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
-				</router-link>
-				<router-link  :to="{ name: 'user_info', params: { name: userinfo.authorName }}" :title="userinfo.authorName">
+        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"></el-avatar>
 					{{userinfo.authorName}}
-				</router-link>
-				<div v-if="isFollow"><el-button type="warning" @click="unFollowClick">unFollow<i class="el-icon-circle-plus el-icon--right" ></i></el-button></div>
-            	<div v-else><el-button type="primary" @click="followClick">Follow<i class="el-icon-circle-plus el-icon--right" ></i></el-button></div>
+        <div>
+          <div v-if="isFollow" style="float: left"><el-button type="warning" @click="unFollowClick">unFollow<i class="el-icon-circle-plus el-icon--right" ></i></el-button></div>
+          <div v-else style="float: left"><el-button type="primary" @click="followClick">Follow<i class="el-icon-circle-plus el-icon--right" ></i></el-button></div>
+          <div v-if="isBlack"><el-button type="warning" @click="unBlackClick">unBlack<i class="el-icon-circle-plus el-icon--right" ></i></el-button></div>
+          <div v-else><el-button type="danger" @click="blackClick">Black<i class="el-icon-circle-plus el-icon--right" ></i></el-button></div>
+        </div>
 				<section>
 					phone: {{userinfo.phone}}
 				</section>
@@ -29,7 +30,9 @@
 		    return {
 		      userinfo:null,
 			  isFollow: false,
-		      loading:false
+		      loading:false,
+          dialogVisible: false,
+          isBlack:false,
 		    }
 		},
 		methods: {
@@ -41,7 +44,8 @@
 		        })
 				.then( (response) => {
 					this.userinfo = this.$route.params.author;
-          this.$set(this, 'isFollow', response.data)
+          this.$set(this, 'isFollow', response.data[0])
+          this.$set(this, 'isBlack', response.data[1])
           this.loading = false;
 					console.log(response.data)
 				})
@@ -49,7 +53,21 @@
 				  	console.log(error);
 				});
 			},
+      showDialog() {
+        this.dialogVisible = true; // 显示弹窗
+      },
+      closeDialog() {
+        this.dialogVisible = false; // 关闭弹窗
+      },
 			followClick(){
+        if (this.$store.state.uid == null){
+          this.showDialog();
+          return;
+        }
+        if (this.isBlack){
+          window.alert("please unblack first!")
+          return;
+        }
 			this.$http({
 				url: `${this.$route.params.author.authorId}/follows/create/${this.$route.params.uid}`, //ES6语法，引入组件内的 route object（路由信息对象）
 				method: "post",
@@ -75,7 +93,39 @@
 				window.alert("error code: " + error.response.status);
 			})
 			},
-
+      blackClick(){
+        if (this.$store.state.uid == null){
+          this.showDialog();
+          return;
+        }
+        if (this.isFollow){
+          this.unFollowClick();
+        }
+        this.$http({
+          url: `${this.$route.params.uid}/blacklist/add/${this.$route.params.author.authorId}`, //ES6语法，引入组件内的 route object（路由信息对象）
+          method: "post",
+        }).then((response => {
+          if(response.status === 201){
+            this.isBlack = true;
+          }
+        })).catch(error =>{
+          console.log(error);
+          window.alert("error code: " + error.response.status);
+        })
+      },
+      unBlackClick(){
+        this.$http({
+          url: `${this.$route.params.uid}/blacklist/remove/${this.$route.params.author.authorId}`, //ES6语法，引入组件内的 route object（路由信息对象）
+          method: "delete",
+        }).then((response => {
+          if(response.status === 200){
+            this.isBlack = false;
+          }
+        })).catch(error =>{
+          console.log(error);
+          window.alert("error code: " + error.response.status);
+        })
+      },
 		},
 	    beforeMount() {
     	  this.loading = true

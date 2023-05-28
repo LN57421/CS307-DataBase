@@ -237,13 +237,21 @@ public class HomepageController {
         post.setAuthor(authorsMapper.findByID(post.getAuthorId()));
         List<Reply> replies = repliesMapper.findReplyByPostId(post.getPostId());
         replies.forEach(reply -> {
-            reply.setAuthor(authorsMapper.findByID(reply.getAuthorId()));
+            Author author = authorsMapper.findByID(reply.getAuthorId());
+            if (reply.isAnonymous()){
+                author.setAuthorName("*****");
+            }
+            reply.setAuthor(author);
         });
         List<List<SecondaryReply>> secondReplyList = new ArrayList<>();
         replies.forEach(reply -> {
             List<SecondaryReply> secondaryReplies = secondaryRepliesMapper.findSecondReplyByFirstReplyId(reply.getReplyId());
             secondaryReplies.forEach(secondaryReply -> {
-                secondaryReply.setAuthor(authorsMapper.findByID(secondaryReply.getAuthorId()));
+                Author author = authorsMapper.findByID(secondaryReply.getAuthorId());
+                if (secondaryReply.isAnonymous()){
+                    author.setAuthorName("*****");
+                }
+                secondaryReply.setAuthor(author);
             });
             secondReplyList.add(secondaryReplies);
         });
@@ -321,7 +329,11 @@ public class HomepageController {
     @GetMapping(path = "{authorId}/getFollow/{followId}")
     public ResponseEntity<Object> getPostAuthor(@PathVariable("authorId") String authorId, @PathVariable("followId") String followId){
         boolean isFollow = followsMapper.findFollowedByAuthorIdAndFollowerId(authorId, followId).size() != 0;
-        return ResponseEntity.ok(isFollow);
+        boolean isBlack = blacklistMapper.findBlackByAuthorIdAndOthors(followId, authorId).size() != 0;
+        List<Boolean> status = new ArrayList<>();
+        status.add(isFollow);
+        status.add(isBlack);
+        return ResponseEntity.ok(status);
     }
 
     @ApiOperation("获取作者关注列表")
@@ -331,6 +343,24 @@ public class HomepageController {
         List<Author> authors = new ArrayList<>();
         followedAuthors.forEach(followedAuthor -> {
             authors.add(authorsMapper.findByID(followedAuthor.getAuthorId()));
+        });
+        boolean[] isFollow = new boolean[followedAuthors.size()];
+        for (int i = 0; i < followedAuthors.size(); i++) {
+            isFollow[i] = true;
+        }
+        List<Object> result = new ArrayList<>();
+        result.add(authors);
+        result.add(isFollow);
+        return ResponseEntity.ok(result);
+    }
+
+    @ApiOperation("获取作者拉黑列表")
+    @GetMapping(path = "{authorId}/getBlackList")
+    public ResponseEntity<Object> getBlackList(@PathVariable("authorId") String authorId){
+        List<Blacklist> followedAuthors = blacklistMapper.getBlacklistByAuthorId(authorId);
+        List<Author> authors = new ArrayList<>();
+        followedAuthors.forEach(followedAuthor -> {
+            authors.add(authorsMapper.findByID(followedAuthor.getBlockedAuthorId()));
         });
         boolean[] isFollow = new boolean[followedAuthors.size()];
         for (int i = 0; i < followedAuthors.size(); i++) {

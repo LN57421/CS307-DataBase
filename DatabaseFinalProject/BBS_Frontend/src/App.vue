@@ -8,6 +8,7 @@
       <el-container>
         <el-header><router-view name="header"></router-view></el-header>
         <el-main>
+          <router-view name="contain"></router-view>
           <router-view name="main" :key="$route.fullPath" style="float: left; width:70%"></router-view>
           <router-view name="sidebar" style="float: right; width:320px"></router-view>
         </el-main>
@@ -20,8 +21,6 @@
 </template>
 
 <script>
-import cnHeader from "./components/Header";
-import Login from "./components/Login";
 export default {
   name: "app",
   components: {},
@@ -30,10 +29,14 @@ export default {
 
 <style>
 html,body,#app, .el-container {
-  background-color: #dfdfdf;
+  background-size: cover;
   height: 100%;
   margin: 0px;
   padding: 0px;
+}
+#app{
+  background:url("./assets/Background.jpg");
+  background-color: #dfdfdf;
 }
 .el-header,
 .el-footer {
@@ -50,7 +53,6 @@ html,body,#app, .el-container {
 }
 
 .el-main {
-  background-color: #d4d4d4;
   color: #333;
   text-align: left;
   line-height: 160px;
@@ -59,7 +61,6 @@ html,body,#app, .el-container {
 
 
 body,
-div,
 span,
 a,
 p,

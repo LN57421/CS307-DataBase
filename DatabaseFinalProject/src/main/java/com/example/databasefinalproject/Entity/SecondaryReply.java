@@ -17,14 +17,14 @@ public class SecondaryReply {
 
     private Reply reply;
 
-    private boolean is_anonymous;
+    private boolean isAnonymous;
 
-    public void setIs_anonymous(boolean is_anonymous) {
-        this.is_anonymous = is_anonymous;
+    public void setAnonymous(boolean anonymous) {
+        this.isAnonymous = anonymous;
     }
 
-    public boolean isIs_anonymous() {
-        return is_anonymous;
+    public boolean isAnonymous() {
+        return isAnonymous;
     }
 
     // Getters and setters
@@ -95,7 +95,7 @@ public class SecondaryReply {
                 ", authorId='" + authorId + '\'' +
                 ", replyId=" + replyId +
                 ", reply=" + reply +
-                ", is_anonymous=" + is_anonymous +
+                ", is_anonymous=" + isAnonymous +
                 '}';
     }
 }

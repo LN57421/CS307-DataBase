@@ -4,7 +4,7 @@
       <el-container v-loading="true"></el-container>
     </div>
     <div class="article" v-else>
-
+      <el-dialog :visible="dialogVisible" title="Please login first!" @close="closeDialog" ></el-dialog>
       <div slot="header" class="clearfix">
             <el-button type="info" style="float: left" plain @click="reply">Reply</el-button>
             <div v-if="share"><el-tooltip class="item" effect="dark" content="cancel" placement="top-start"><el-button type="danger" icon="el-icon-share" style="float: right" circle @click="disshareClick"></el-button></el-tooltip></div>
@@ -39,7 +39,10 @@
           show-word-limit
         >
         </el-input>
-        <div style="margin: 20px 0;"><el-button type="primary" plain @click="sendFirstReply">Send</el-button></div>
+        <div style="margin: 20px 0;">
+          <el-button type="primary" plain @click="sendFirstReply(false)">Send</el-button>
+          <el-button type="primary" @click="sendFirstReply(true)">Send_Anonymous</el-button>
+        </div>
       </div>
     </div>
 
@@ -47,8 +50,8 @@
       <div v-for="(key, index) in firstReply" :key="index" class="replySec">
         <el-card class="box-card">
           <el-button type="info" style="float: right" plain @click="secondReplyToReply(index)">Reply to reply</el-button>
-          <router-link :to="{ name: 'user_info', params: { name: key.author.authorName } }"><el-avatar src="https://www.dmoe.cc/random.php"></el-avatar ></router-link>
-          <router-link class="info" :to="{ name: 'user_info', params: { name: key.author.authorName } }">{{ key.author.authorName }}</router-link>
+          <el-avatar src="https://www.dmoe.cc/random.php"></el-avatar >
+         {{ key.author.authorName }}
           <el-descriptions class="margin-top" :column="2" border>
             <el-descriptions-item>
               <template slot="label">
@@ -81,7 +84,11 @@
               show-word-limit
             >
             </el-input>
-            <div style="margin: 20px 0;"><el-button type="primary" plain @click="SendSecondReply(key.replyId, index)">Send</el-button></div>
+            <div style="margin: 20px 0;">
+              <el-button type="primary" plain @click="SendSecondReply(key.replyId, index,false)" >Send</el-button>
+              <el-button type="primary" @click="SendSecondReply(key.replyId, index,true)" >Send_Anonymous</el-button>
+            </div>
+
           </div>
           <h3>Second reply</h3>
           <div v-for="(secondReplies, secondIndex) in dealingSecondReply[index]" :key="secondIndex" class="text item">
@@ -119,7 +126,8 @@ export default {
       isReply:false,
       isSecondReply:[],
       firstReplyContent:"",
-      secondReplyContent:[]
+      secondReplyContent:[],
+      dialogVisible:false,
     };
   },
   methods: {
@@ -156,6 +164,12 @@ export default {
           window.alert("error code: " + error.response.status);
         });
     },
+    showDialog() {
+      this.dialogVisible = true; // 显示弹窗
+    },
+    closeDialog() {
+      this.dialogVisible = false; // 关闭弹窗
+    },
     dealing() {
       var point = 0;
       for(var i = 0; i < this.secondReply.length; i = i + 1){
@@ -166,6 +180,10 @@ export default {
       console.log(this.dealingSecondReply['0'])
     },
     likeClick(){
+      if (this.$store.state.uid == null){
+        this.showDialog();
+        return;
+      }
       this.$http({
         url: `${this.$route.params.uid}/likedPosts/create/${this.$route.params.postId}`, //ES6语法，引入组件内的 route object（路由信息对象）
         method: "post",
@@ -192,6 +210,10 @@ export default {
       })
     },
     favorClick(){
+      if (this.$store.state.uid == null){
+        this.showDialog();
+        return;
+      }
       this.$http({
         url: `${this.$route.params.uid}/favoritePosts/create/${this.$route.params.postId}`, //ES6语法，引入组件内的 route object（路由信息对象）
         method: "post",
@@ -218,6 +240,10 @@ export default {
       })
     },
     shareClick(){
+      if (this.$store.state.uid == null){
+        this.showDialog();
+        return;
+      }
       this.$http({
         url: `${this.$route.params.uid}/sharedPosts/create/${this.$route.params.postId}`, //ES6语法，引入组件内的 route object（路由信息对象）
         method: "post",
@@ -244,14 +270,22 @@ export default {
       })
     },
     reply(model, id){
+      if (this.$store.state.uid == null){
+        this.showDialog();
+        return;
+      }
       this.isReply = true;
     },
     secondReplyToReply(index){
+      if (this.$store.state.uid == null){
+        this.showDialog();
+        return;
+      }
       this.$set(this.isSecondReply, index, true);
     },
-    sendFirstReply(){
+    sendFirstReply(anonymous){
       this.$http({
-        url: `${this.$route.params.uid}/replies/create/${false}`, //ES6语法，引入组件内的 route object（路由信息对象）
+        url: `${this.$route.params.uid}/replies/create/${anonymous}`, //ES6语法，引入组件内的 route object（路由信息对象）
         method: "post",
         headers: {
           "Content-Type": "application/json",
@@ -272,9 +306,9 @@ export default {
         }
       })
     },
-    SendSecondReply(replyId, index){
+    SendSecondReply(replyId, index, anonymous){
       this.$http({
-        url: `${this.$route.params.uid}/secondaryReplies/create/${false}`, //ES6语法，引入组件内的 route object（路由信息对象）
+        url: `${this.$route.params.uid}/secondaryReplies/create/${anonymous}`, //ES6语法，引入组件内的 route object（路由信息对象）
         method: "post",
         headers: {
           "Content-Type": "application/json",

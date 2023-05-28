@@ -20,6 +20,7 @@
         <el-menu-item-group>
           <template slot="title">follow</template>
           <el-menu-item index="3-1" @click="follow">Following author</el-menu-item>
+          <el-menu-item index="3-1" @click="black">Black author</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group title="Post">
           <el-menu-item index="3-2" @click="createdPost">Created Post</el-menu-item>
@@ -52,6 +53,9 @@ export default {
     },
     follow(){
       this.$router.push({name: "followingList", params: {uid: this.$store.state.uid}})
+    },
+    black(){
+      this.$router.push({name: "blackList", params: {uid: this.$store.state.uid}})
     },
     createdPost(){
       this.$router.push({name: "createdPost", params: {model: "createdPost", uid: this.$store.state.uid}})

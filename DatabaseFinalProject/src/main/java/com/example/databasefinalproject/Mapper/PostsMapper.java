@@ -34,18 +34,11 @@ public interface PostsMapper {
 
 
     //返回热门帖子（点赞数最高的十个帖子）
-    @Select("select * from posts where post_id in (SELECT" +
-            "    posts.post_id" +
-            "FROM" +
-            "    posts" +
-            "JOIN" +
-            "    liked_posts ON posts.post_id = liked_posts.post_id" +
-            "GROUP BY" +
-            "    posts.post_id" +
-            "ORDER BY" +
-            "    COUNT(liked_posts.liking_author_id) DESC" +
-            "LIMIT 10);")
+    @Select("select * from posts where post_id in (SELECT posts.post_id FROM posts JOIN liked_posts ON posts.post_id = liked_posts.post_id GROUP BY posts.post_id ORDER BY COUNT(liked_posts.liking_author_id) DESC LIMIT 10);")
     List<Post> findHostPost();
+
+//    @Select("select * from posts where post_id in (SELECT posts.post_id FROM posts JOIN liked_posts ON posts.post_id = liked_posts.post_id GROUP BY posts.post_id ORDER BY COUNT(liked_posts.liking_author_id) DESC LIMIT 10);")
+//    List<Integer> findHostPost();
 
     // 按时间段搜索帖子
     @Select("select * from posts where posting_time >= #{begin} and posting_time <= #{end}")

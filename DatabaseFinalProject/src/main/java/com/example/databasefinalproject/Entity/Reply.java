@@ -18,14 +18,14 @@ public class Reply {
 
     private Post post;
 
-    private boolean is_anonymous;
+    private boolean isAnonymous;
 
-    public void setIs_anonymous(boolean is_anonymous) {
-        this.is_anonymous = is_anonymous;
+    public void setAnonymous(boolean anonymous) {
+        this.isAnonymous = anonymous;
     }
 
-    public boolean isIs_anonymous() {
-        return is_anonymous;
+    public boolean isAnonymous() {
+        return isAnonymous;
     }
 // Getters and setters
 
@@ -96,7 +96,7 @@ public class Reply {
                 ", authorId='" + authorId + '\'' +
                 ", postId=" + postId +
                 ", post=" + post +
-                ", is_anonymous=" + is_anonymous +
+                ", is_anonymous=" + isAnonymous +
                 '}';
     }
 }
