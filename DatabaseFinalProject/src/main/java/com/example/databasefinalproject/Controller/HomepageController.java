@@ -119,8 +119,8 @@ public class HomepageController {
 
     @ApiOperation("根据时间搜索帖子")
     @GetMapping(path = "{authorId}/PostsByTime/{login}")
-    public ResponseEntity<Object> getPostsByTimeInterval(@RequestBody Timestamp startTime,
-                                                         @RequestBody Timestamp endTime,
+    public ResponseEntity<Object> getPostsByTimeInterval(@RequestParam("startTime") Timestamp startTime,
+                                                         @RequestParam("endTime") Timestamp endTime,
                                                          @PathVariable("authorId") String authorId,
                                                          @PathVariable("login") boolean login){
         List<Post> posts = postsMapper.findPostByTimeInterval(startTime, endTime);
@@ -143,7 +143,7 @@ public class HomepageController {
 
     @ApiOperation("按文章标题关键词词进行搜索")
     @GetMapping(path = "{authorId}/PostsByKeyWordInTitles/{login}")
-    public ResponseEntity<Object> getPostsByKeyWordInTitles(@RequestBody  String[] keyWords,
+    public ResponseEntity<Object> getPostsByKeyWordInTitles(@RequestParam("keyWords")  String[] keyWords,
                                                              @PathVariable("authorId") String authorId,
                                                             @PathVariable("login") boolean login){
         Set<Post> postSet = new HashSet<>();
@@ -172,7 +172,7 @@ public class HomepageController {
 
     @ApiOperation("按文章内容关键词词进行搜索")
     @GetMapping(path = "{authorId}/PostsByKeyWordInContents/{login}")
-    public ResponseEntity<Object> getPostsByKeyWordInContent(@RequestBody  String[] keyWords,
+    public ResponseEntity<Object> getPostsByKeyWordInContent(@RequestParam("keyWords")  String[] keyWords,
                                                              @PathVariable("authorId") String authorId,
                                                              @PathVariable("login") boolean login){
         Set<Post> postSet = new HashSet<>();
@@ -201,7 +201,7 @@ public class HomepageController {
 
     @ApiOperation("按文章类型进行搜索")
     @GetMapping(path = "{authorId}/getPostsByCategory/{login}")
-    public ResponseEntity<Object> getPostsByCategory(@RequestBody  String[] Categories,
+    public ResponseEntity<Object> getPostsByCategory(@RequestParam("Categories")  String[] Categories,
                                                              @PathVariable("authorId") String authorId,
                                                              @PathVariable("login") boolean login){
         Set<Post> postSet = new HashSet<>();
