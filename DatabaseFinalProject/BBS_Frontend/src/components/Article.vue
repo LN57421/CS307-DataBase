@@ -134,7 +134,7 @@ export default {
     getData() {
       //获取文章信息
       this.$http({
-        url: `${this.$route.params.uid}/postContent/${this.$route.params.postId}`, //ES6语法，引入组件内的 route object（路由信息对象）
+        url: `${this.$route.params.uid}/postContent/${this.$route.params.postId}/${this.$store.state ? true : false}`, //ES6语法，引入组件内的 route object（路由信息对象）
         method: "get",
       })
         .then((response) => {

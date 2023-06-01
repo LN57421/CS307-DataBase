@@ -231,8 +231,8 @@ public class HomepageController {
 
 
     @ApiOperation("获取单个帖子的所有具体信息")
-    @GetMapping(path = "{authorId}/postContent/{id}")
-    public ResponseEntity<Object> getPostInfo(@PathVariable("authorId") String authorId, @PathVariable("id") int id){
+    @GetMapping(path = "{authorId}/postContent/{id}/{login}")
+    public ResponseEntity<Object> getPostInfo(@PathVariable("authorId") String authorId, @PathVariable("id") int id, @PathVariable("login") boolean login){
         Post post = postsMapper.findPostByPostId(id);
         post.setAuthor(authorsMapper.findByID(post.getAuthorId()));
         List<Reply> replies = repliesMapper.findReplyByPostId(post.getPostId());
@@ -243,6 +243,14 @@ public class HomepageController {
             }
             reply.setAuthor(author);
         });
+        List<Blacklist> blacklists = blacklistMapper.getBlacklistByAuthorId(authorId);
+        if (login){
+            if (blacklists.size() != 0){
+                for (Blacklist blacklist: blacklists) {
+                    replies.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                }
+            }
+        }
         List<List<SecondaryReply>> secondReplyList = new ArrayList<>();
         replies.forEach(reply -> {
             List<SecondaryReply> secondaryReplies = secondaryRepliesMapper.findSecondReplyByFirstReplyId(reply.getReplyId());
@@ -253,6 +261,13 @@ public class HomepageController {
                 }
                 secondaryReply.setAuthor(author);
             });
+            if (login){
+                if (blacklists.size() != 0){
+                    for (Blacklist blacklist: blacklists) {
+                        secondaryReplies.removeIf(temp -> Objects.equals(temp.getAuthorId(), blacklist.getBlockedAuthorId()));
+                    }
+                }
+            }
             secondReplyList.add(secondaryReplies);
         });
         boolean likedPost = likedPostMapper.findLikedPostsByAuthorIdAndPostName(id, authorId).size() != 0;
